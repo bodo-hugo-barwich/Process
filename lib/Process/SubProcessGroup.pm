@@ -12,6 +12,11 @@
 #---------------------------------
 # Requirements:
 # - The Perl Package "perl-Data-Dump" must be installed 
+# - The Perl Module "SubProcess.pm" must be installed 
+#
+#---------------------------------
+# Extensions:
+# - The Perl Module "ChildProcess.pm" must be installed 
 #
 #---------------------------------
 # Features:
@@ -30,11 +35,15 @@ package SubProcessGroup;
 #----------------------------------------------------------------------------
 #Dependencies
 
+BEGIN {
+    use lib "../Process";
+}  #BEGIN
 
 use POSIX qw(strftime);
 use Scalar::Util 'blessed';
 use Data::Dump qw(dump);
 
+use SubProcess;
 
 
 #----------------------------------------------------------------------------
