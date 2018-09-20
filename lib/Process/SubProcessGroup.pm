@@ -26,6 +26,13 @@
 
 
 
+
+BEGIN {
+    use lib "../../lib";
+}  #BEGIN
+
+
+
 #==============================================================================
 # The SubProcessGroup Package
 
@@ -34,10 +41,6 @@ package SubProcessGroup;
 
 #----------------------------------------------------------------------------
 #Dependencies
-
-BEGIN {
-    use lib "../Process";
-}  #BEGIN
 
 use POSIX qw(strftime);
 use Scalar::Util 'blessed';
