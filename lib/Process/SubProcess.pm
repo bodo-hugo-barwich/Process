@@ -23,7 +23,7 @@
 # The SubProcess Package
 
 
-package SubProcess;
+package Process::SubProcess;
 
 #----------------------------------------------------------------------------
 #Dependencies
@@ -42,7 +42,7 @@ use IO::Select;
 
 sub runSubProcess
 {
-  my $sbprc = SubProcess::new;
+  my $sbprc = Process::SubProcess::new('Process::SubProcess');
 
   #Take the Method Parameters
   my %hshprms = @_;

@@ -14,7 +14,11 @@
 
 
 
+use warnings;
+use strict;
+
 use Cwd qw(abs_path);
+
 
 
 my $smodule = "";

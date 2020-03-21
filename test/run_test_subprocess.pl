@@ -13,18 +13,21 @@
 #
 
 
+
+use warnings;
+use strict;
+
+use Test::More;
+
 BEGIN
 {
   use lib "lib";
   use lib "../lib";
 }  #BEGIN
 
-
-use Test::More;
-
 require_ok('Process::SubProcess');
 
-use Process::SubProcess qw(runSubProcess);
+#use Process::SubProcess;
 
 
 
@@ -37,7 +40,7 @@ my $scriptstatus = -1;
 
 
 
-($scriptlog, $scripterror, $scriptstatus) = runSubProcess(("command" => "$stestscript $iscriptpause"));
+($scriptlog, $scripterror, $scriptstatus) = Process::SubProcess::runSubProcess(("command" => "$stestscript $iscriptpause"));
 
 
 
