@@ -5,11 +5,12 @@
 # @package Test for the Process::SubProcess Module
 # @subpackage test_subprocess.pl
 
-# This Module runs tests on the Process::SubProcess Module
+# This Script is the Test Script which is run in the Process::SubProcess Module Test
+# It generates Output to STDOUT and STDERR
+# It returns the EXIT CODE passed as Parameter. Only Integer EXIT CODES are allowed
 #
 #---------------------------------
 # Requirements:
-# - The Perl Module "Process::SubProcess" must be installed
 #
 
 
@@ -22,9 +23,10 @@ use Cwd qw(abs_path);
 
 
 my $smodule = "";
-my $spath = abs_path($0);
+my $spath = abs_path($ARGV[0]);
 
-my $ipause = $1;
+my $ipause = $ARGV[1];
+my $ierr = $ARGV[2];
 
 
 ($smodule = $spath) =~ s/.*\/([^\/]+)$/$1/;
@@ -32,6 +34,14 @@ $spath =~ s/^(.*\/)$smodule$/$1/;
 
 $ipause = 0 unless(defined $ipause);
 
+if(defined $ierr)
+{
+  $ierr = 1 unless($ierr =~ qr/^-?\d$/);
+}
+else
+{
+  $ierr = 0;
+}
 
 print STDERR "script '$smodule' START 0 ERROR\n";
 
@@ -46,3 +56,4 @@ print "script '$smodule' END 1\n";
 print STDERR "script '$smodule' END 1 ERROR\n";
 
 
+exit $ierr;

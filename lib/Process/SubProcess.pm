@@ -44,12 +44,22 @@ sub runSubProcess
 {
   my $sbprc = Process::SubProcess::new('Process::SubProcess');
 
-  #Take the Method Parameters
-  my %hshprms = @_;
-  #Take the Method Parameters
+  my %hshprms = undef;
+  #Return the Processing Report
   my @arrrs = ();
   my $irs = 0;
 
+
+  if(scalar(@_) > 1)
+  {
+    #Take the Method Parameters
+    %hshprms = @_;
+  }
+  else
+  {
+    #One single Parameter
+    %hshprms = ('command' => $_[0]);
+  }
 
   $sbprc->setArrProcess(%hshprms);
 
@@ -58,9 +68,19 @@ sub runSubProcess
 
   push @arrrs, ($sbprc->getReportString) ;
   push @arrrs, ($sbprc->getErrorString) ;
-  push @arrrs, ($sbprc->getErrorCode) ;
+
+  if($sbprc->getProcessStatus > -1)
+  {
+    push @arrrs, ($sbprc->getProcessStatus) ;
+  }
+  else  #The Process could not be launched
+  {
+    push @arrrs, ($irs) ;
+  }
 
   $sbprc->freeResources;
+
+  $sbprc = undef;
 
 
   return @arrrs;

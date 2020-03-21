@@ -11,11 +11,11 @@
 #---------------------------------
 # Requirements:
 # - The Perl Package "perl-Data-Dump" must be installed
-# - The Perl Module "SubProcess.pm" must be installed
+# - The Perl Module "Process/SubProcess.pm" must be installed
 #
 #---------------------------------
 # Extensions:
-# - The Perl Module "ChildProcess.pm" must be installed
+# - The Perl Module "Process/ChildProcess.pm" must be installed
 #
 #---------------------------------
 # Features:
@@ -35,7 +35,7 @@ BEGIN {
 # The SubProcessGroup Package
 
 
-package SubProcessGroup;
+package Process::SubProcessGroup;
 
 #----------------------------------------------------------------------------
 #Dependencies
@@ -148,7 +148,7 @@ sub add
     else  #No Parameters given
     {
       #Create a SubProcess Object by Default
-      $rsprc = SubProcess::->new;
+      $rsprc = Process::SubProcess::->new;
     }
   } #unless(defined $rsprc)
 
@@ -171,13 +171,13 @@ sub add
   	{
   		$rsprc = undef;
 
-  		$rsprc = SubProcess::->new;
+  		$rsprc = Process::SubProcess::->new;
   	}
   }
   else  #Sub Process Object was not created yet
   {
     #Create a SubProcess Object by Default
-    $rsprc = SubProcess::->new;
+    $rsprc = Process::SubProcess::->new;
   } #if(defined $rsprc)
 
 	if(defined $rsprc)
