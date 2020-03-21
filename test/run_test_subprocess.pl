@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 
-=pod
 # @author Bodo (Hugo) Barwich
-# @version 2018-06-14
+# @version 2020-03-21
 # @package Test for the Process::SubProcess Module
 # @subpackage run_test_subprocess.pl
 
@@ -10,9 +9,8 @@
 #
 #---------------------------------
 # Requirements:
-# - The Perl Module "Process::SubProcess" must be installed 
+# - The Perl Module "Process::SubProcess" must be installed
 #
-=cut
 
 
 BEGIN
@@ -22,9 +20,11 @@ BEGIN
 }  #BEGIN
 
 
-use Test::More; 
+use Test::More;
 
 require_ok('Process::SubProcess');
+
+use Process::SubProcess qw(runSubProcess);
 
 
 
