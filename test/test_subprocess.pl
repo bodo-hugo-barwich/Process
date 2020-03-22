@@ -2,7 +2,7 @@
 
 # @author Bodo (Hugo) Barwich
 # @version 2020-03-21
-# @package Test for the Process::SubProcess Module
+# @package Test for the SubProcess Module
 # @subpackage test_subprocess.pl
 
 # This Script is the Test Script which is run in the Process::SubProcess Module Test

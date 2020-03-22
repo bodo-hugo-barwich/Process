@@ -3,9 +3,9 @@
 # @author Bodo (Hugo) Barwich
 # @version 2020-03-21
 # @package SubProcess Management
-# @subpackage Spawn Subprocesses and read their Output and Errors
+# @subpackage SubProcess.pm
 
-# This Module defines Classes to manage multiple Subprocesses read their Output and Errors
+# This Module defines the Class to manage a Subprocess and read its Output and Errors
 # It forks the Main Process to execute the Sub Process Funcionality
 #
 #---------------------------------

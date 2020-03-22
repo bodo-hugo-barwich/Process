@@ -3,19 +3,18 @@
 # @author Bodo (Hugo) Barwich
 # @version 2020-03-21
 # @package SubProcess Management
-# @subpackage Spawn Subprocesses and read their Output and Errors
+# @subpackage SubProcess/Group.pm
 
-# This Module defines Classes to manage multiple Subprocesses read their Output and Errors
-# It forks the Main Process to execute the Sub Process Funcionality
+# This Module defines a Class to manage multiple SubProcess Objects read their Output and Errors
 #
 #---------------------------------
 # Requirements:
 # - The Perl Package "perl-Data-Dump" must be installed
-# - The Perl Module "Process/SubProcess.pm" must be installed
+# - The Perl Module "SubProcess.pm" must be installed
 #
 #---------------------------------
 # Extensions:
-# - The Perl Module "Process/ChildProcess.pm" must be installed
+# - The Perl Module "ChildProcess.pm" must be installed
 #
 #---------------------------------
 # Features:
@@ -32,7 +31,7 @@ BEGIN {
 
 
 #==============================================================================
-# The SubProcessGroup Package
+# The SubProcess::Group Package
 
 
 package SubProcess::Group;

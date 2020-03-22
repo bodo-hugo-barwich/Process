@@ -2,14 +2,14 @@
 
 # @author Bodo (Hugo) Barwich
 # @version 2020-03-21
-# @package Test for the Process::SubProcess Module
+# @package Test for the SubProcess Module
 # @subpackage run_test_subprocess.pl
 
-# This Module runs tests on the Process::SubProcess Module
+# This Module runs tests on the SubProcess Module
 #
 #---------------------------------
 # Requirements:
-# - The Perl Module "Process::SubProcess" must be installed
+# - The Perl Module "SubProcess" must be installed
 #
 
 
