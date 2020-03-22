@@ -27,7 +27,7 @@ BEGIN
   use lib "../lib";
 }  #BEGIN
 
-require_ok('Process::SubProcess');
+require_ok('SubProcess');
 
 
 my $smodule = "";
@@ -48,7 +48,7 @@ my $iscriptstatus = -1;
 
 
 ($rscriptlog, $rscripterror, $iscriptstatus)
-  = Process::SubProcess::runSubProcess("${spath}${stestscript} $iscriptpause");
+  = SubProcess::runSubProcess("${spath}${stestscript} $iscriptpause");
 
 isnt($rscriptlog, undef, "STDOUT Ref is returned");
 

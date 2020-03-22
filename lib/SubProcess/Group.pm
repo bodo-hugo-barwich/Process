@@ -35,7 +35,7 @@ BEGIN {
 # The SubProcessGroup Package
 
 
-package Process::SubProcessGroup;
+package SubProcess::Group;
 
 #----------------------------------------------------------------------------
 #Dependencies
@@ -45,7 +45,7 @@ use POSIX qw(strftime);
 use Scalar::Util 'blessed';
 use Data::Dump qw(dump);
 
-use Process::SubProcess;
+use SubProcess;
 
 
 #----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ sub new {
 }
 
 sub DESTROY {
-    my $self = shift;
+    my $self = $_[0];
 
 
   #Free the System Resources
@@ -150,7 +150,7 @@ sub add
     else  #No Parameters given
     {
       #Create a SubProcess Object by Default
-      $rsprc = Process::SubProcess::->new;
+      $rsprc = SubProcess::->new;
     }
   } #unless(defined $rsprc)
 
@@ -173,13 +173,13 @@ sub add
   	{
   		$rsprc = undef;
 
-  		$rsprc = Process::SubProcess::->new;
+  		$rsprc = SubProcess::->new;
   	}
   }
   else  #Sub Process Object was not created yet
   {
     #Create a SubProcess Object by Default
-    $rsprc = Process::SubProcess::->new;
+    $rsprc = SubProcess::->new;
   } #if(defined $rsprc)
 
 	if(defined $rsprc)

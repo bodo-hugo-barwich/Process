@@ -24,7 +24,7 @@
 # The SubProcess Package
 
 
-package Process::SubProcess;
+package SubProcess;
 
 #----------------------------------------------------------------------------
 #Dependencies
@@ -45,7 +45,7 @@ use Data::Dump qw(dump);
 
 sub runSubProcess
 {
-  my $sbprc = Process::SubProcess::new('Process::SubProcess');
+  my $sbprc = SubProcess::new('SubProcess');
 
   my %hshprms = undef;
   #Return the Processing Report
