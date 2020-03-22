@@ -11,6 +11,7 @@
 #---------------------------------
 # Requirements:
 # - The Perl Package "perl-Data-Dump" must be installed
+# - The Perl Package "perl-Time-HiRes" must be installed
 #
 #---------------------------------
 # Features:
@@ -33,6 +34,8 @@ use POSIX ":sys_wait_h";
 use POSIX qw(strftime);
 use Time::HiRes qw(gettimeofday);
 use IO::Select;
+
+use Data::Dump qw(dump);
 
 
 
@@ -110,7 +113,7 @@ sub new {
         "_error_pipe"         => undef,
         "_pipe_selector"      => undef,
         "_package_size" => 8192,
-        "_selector_timeout"   => 5,
+        "_read_timeout" => 5,
         "_check_interval" => -1,
         "_execution_timeout" => -1,
         "_report"             => "",
@@ -235,30 +238,55 @@ sub setCheckInterval
 	my $self = shift;
 
 
-	if(scalar(@_) > 0)
-	{
+  if(scalar(@_) > 0)
+  {
     $self->{"_check_interval"} = shift;
 
     $self->{"_check_interval"} = -1 unless($self->{"_check_interval"} =~ /^-?\d+$/);
-	}
-	else #No Parameters given
-	{
-	  #Remove the Check Interval
-	  $self->{"_check_interval"} = -1;
-	}	#if(scalar(@_) > 0)
+  }
+  else #No Parameters given
+  {
+    #Remove the Check Interval
+    $self->{"_check_interval"} = -1;
+  }	#if(scalar(@_) > 0)
 
   $self->{"_check_interval"} = -1 unless(defined $self->{"_check_interval"});
 
   $self->{"_check_interval"} = -1 if($self->{"_check_interval"} < -1);
 
-	if($self->{"_check_interval"} > 1)
-	{
-		$self->{"_selector_timeout"} = $self->{"_check_interval"} - 1;
-	}
-	else #Set the Minimum Selector Timeout
-	{
-		$self->{"_selector_timeout"} = 1;
-	}
+  if($self->{"_check_interval"} > 1)
+  {
+  	$self->{"_read_timeout"} = $self->{"_check_interval"} - 1
+      if($self->{"_check_interval"} < $self->{"_read_timeout"});
+  }
+  else #Set the Minimum Read Timeout
+  {
+  	$self->{"_read_timeout"} = 1;
+  }
+}
+
+sub setReadTimeout
+{
+  my $self = shift;
+
+
+  if(scalar(@_) > 0)
+  {
+    $self->{"_read_timeout"} = shift;
+
+    $self->{"_read_timeout"} = 1 unless($self->{"_read_timeout"} =~ /^-?\d+$/);
+  }
+  else #No Parameter was given
+  {
+    #Set the Minimum Read Timeout
+    $self->{"_read_timeout"} = 1;
+  } #if(scalar(@_) > 0)
+
+  #Set the Minimum Read Timeout
+  $self->{"_read_timeout"} = 1 unless(defined $self->{"_read_timeout"});
+
+  #Set the Minimum Read Timeout
+  $self->{"_read_timeout"} = 1 if($self->{"_read_timeout"} < 1);
 }
 
 sub setTimeout
@@ -747,7 +775,7 @@ sub Read
       $self->{"_report"} .= "prc (" . $self->{"_pid"} . "): try read '" . $ppsel->count . "' pipes\n"
         if($self->{"_debug"});
 
-  		while(@arrppselrdy = $ppsel->can_read($self->{"_selector_timeout"}))
+  		while(@arrppselrdy = $ppsel->can_read($self->{"_read_timeout"}))
   		{
   			foreach $ppselfh (@arrppselrdy)
   			{
@@ -803,7 +831,7 @@ sub Read
             } #if($!)
           } #if(defined $irdcnt)
   			}	#foreach $ppselfh (@arrjmselrdy)
-  		} #while(@arrppselrdy = $ppsel->can_read($self->{"_selector_timeout"}))
+  		} #while(@arrppselrdy = $ppsel->can_read($self->{"_read_timeout"}))
 
       $self->{"_report"} .= "prc (" . $self->{"_pid"} . "): try read done. '"
         . $ppsel->count . "' pipes left.\n"
@@ -1039,6 +1067,7 @@ sub clearErrors()
 	$self->{"_pid"} = -1;
 	$self->{"_process_status"} = -1;
 
+  $self->{"_report"} = "";
 	$self->{"_error_message"} = "";
 	$self->{"_error_code"}    = 0;
 }
@@ -1090,6 +1119,20 @@ sub getCheckInterval {
     my $self = shift;
 
     return $self->{"_check_interval"};
+}
+
+sub getReadTimeout
+{
+  my $self = shift;
+
+  return $self->{"_read_timeout"};
+}
+
+sub getTimeout
+{
+  my $self = shift;
+
+  return $self->{"_execution_timeout"};
 }
 
 sub isRunning {

@@ -40,6 +40,7 @@ package Process::SubProcessGroup;
 #----------------------------------------------------------------------------
 #Dependencies
 
+
 use POSIX qw(strftime);
 use Scalar::Util 'blessed';
 use Data::Dump qw(dump);
@@ -62,9 +63,10 @@ sub new {
 
     #Set the Default Attributes and assign the initial Values
     $self = {
-        "_array_processes" => (),
-        "_list_processes"  => (),
+        "_array_processes" => [],
+        "_list_processes"  => {},
         "_check_interval" => -1,
+        "_read_timeout" => -1,
         "_execution_timeout" => -1,
         "_report"          => "",
         "_error_message"   => "",
@@ -188,7 +190,12 @@ sub add
 			push @{$self->{_array_processes}}, ($rsprc);
 
       $rsprc->setCheckInterval($self->{"_check_interval"})
-        if(defined $self->{"_check_interval"});
+        if(defined $self->{"_check_interval"}
+          && $self->{"_check_interval"} > 0);
+
+      $rsprc->setReadTimeout($self->{"_read_timeout"})
+        if(defined $self->{"_read_timeout"}
+          && $self->{"_read_timeout"} > 0);
 
 		} #if($rsprc->isa("ChildProcess") || $rsprc->isa("SubProcess"))
 	}	#if(defined $rsprc)
@@ -229,16 +236,82 @@ sub setCheckInterval
 
   if(defined $self->{"_array_processes"})
   {
-    my $sbprc = undef;
-
-
-    foreach $sbprc (@{$self->{"_array_processes"}})
+    if(scalar(@{$self->{"_array_processes"}}) > 0)
     {
-      #Communicate the Change to all Sub Processes
-      $sbprc->setCheckInterval($self->{"_check_interval"});
+      my $sbprc = undef;
+      my $isbprcchk = sprintf("%d", $self->{"_check_interval"} / scalar(@{$self->{"_array_processes"}}));
 
-    } #foreach $sbprc (@{$self->{"_array_processes"}})
+
+      foreach $sbprc (@{$self->{"_array_processes"}})
+      {
+        #Communicate the Change to all Sub Processes
+        $sbprc->setCheckInterval($isbprcchk);
+
+      } #foreach $sbprc (@{$self->{"_array_processes"}})
+    } #if(scalar(@{$self->{"_array_processes"}}) > 0)
   } #if(defined $self->{"_array_processes"})
+}
+
+sub setReadTimeout
+{
+  my $self = shift;
+
+
+  if(scalar(@_) > 0)
+  {
+    $self->{"_read_timeout"} = shift;
+
+    #The Parameter is not a Number
+    $self->{"_read_timeout"} = 1 unless($self->{"_read_timeout"} =~ /^-?\d+$/);
+  }
+  else  #No Parameters given
+  {
+    #Set Minimum Read Timeout
+    $self->{"_read_timeout"} = 1;
+  } #if(scalar(@_) > 0)
+
+  #Set the Minimum Read Timeout
+  $self->{"_read_timeout"} = 1 unless(defined $self->{"_read_timeout"});
+
+  #Set the Minimum Read Timeout
+  $self->{"_read_timeout"} = 1 if($self->{"_read_timeout"} < 1);
+
+  if(defined $self->{"_array_processes"})
+  {
+    if(scalar(@{$self->{"_array_processes"}}) > 0)
+    {
+      my $sbprc = undef;
+
+
+      foreach $sbprc (@{$self->{"_array_processes"}})
+      {
+        #Communicate the Change to all Sub Processes
+        $sbprc->setReadTimeout($self->{"_read_timeout"});
+
+      } #foreach $sbprc (@{$self->{"_array_processes"}})
+    } #if(scalar(@{$self->{"_array_processes"}}) > 0)
+  } #if(defined $self->{"_array_processes"})
+}
+
+sub setTimeout
+{
+  my $self = shift;
+
+
+  if(scalar(@_) > 0)
+  {
+    $self->{"_execution_timeout"} = shift;
+
+    $self->{"_execution_timeout"} = -1 unless($self->{"_execution_timeout"} =~ /^-?\d+$/);
+  }
+  else #No Parameter was given
+  {
+    $self->{"_execution_timeout"} = -1;
+  } #if(scalar(@_) > 0)
+
+  $self->{"_execution_timeout"} = -1 unless(defined $self->{"_execution_timeout"});
+
+  $self->{"_execution_timeout"} = -1 if($self->{"_execution_timeout"} < -1);
 }
 
 sub setProfiling
@@ -274,6 +347,62 @@ sub setProfiling
     } #foreach $sbprc (@{$self->{"_array_processes"}})
   } #if(defined $self->{"_array_processes"})
 
+}
+
+sub setDebug
+{
+  my $self = shift;
+
+
+  if(scalar(@_) > 0)
+  {
+    $self->{"_debug"} = shift;
+
+    $self->{"_debug"} = 0 unless($self->{"_debug"} =~ /^-?\d+$/);
+  }
+  else  #No Parameter was given
+  {
+    $self->{"_debug"} = 1;
+  } #if(scalar(@_) > 0)
+
+  $self->{"_debug"} = 1 unless(defined $self->{"_debug"});
+
+  if($self->{"_debug"} > 1)
+  {
+    $self->{"_debug"} = 1;
+  }
+  elsif($self->{"_debug"} < 0)
+  {
+    $self->{"_debug"} = 0;
+  }
+}
+
+sub setQuiet
+{
+  my $self = shift;
+
+
+  if(scalar(@_) > 0)
+  {
+    $self->{"_quiet"} = shift;
+
+    $self->{"_quiet"} = 0 unless($self->{"_quiet"} =~ /^-?\d+$/);
+  }
+  else  #No Parameter was given
+  {
+    $self->{"_quiet"} = 1;
+  } #if(scalar(@_) > 0)
+
+  $self->{"_quiet"} = 1 unless(defined $self->{"_quiet"});
+
+  if($self->{"_quiet"} > 1)
+  {
+    $self->{"_quiet"} = 1;
+  }
+  elsif($self->{"_quiet"} < 0)
+  {
+    $self->{"_quiet"} = 0;
+  }
 }
 
 sub Launch
@@ -344,7 +473,7 @@ sub Launch
 						. "Message: " . $sbprc->getErrorString;
 				}	#if($sbprc->Launch)
 			}	#if(defined $sbprc)
-		}	#foreach $sbprc (@{$self->{"_array_processes"}})
+		}	#for($iprcidx = 0; $iprcidx < $iprccnt; $iprcidx++)
 	}	#if(defined $self->{"_array_processes"})
 
 
@@ -379,8 +508,7 @@ sub Check
 			$sprcnm = $sbprc->getNameComplete;
 
       $self->{"_report"} .= "Sub Process ${sprcnm}: checking ...\n"
-        if($self->{"_debug"} > 0
-          && $self->{"_quiet"} < 1);
+        if($self->{"_debug"} > 0);
 
 			if($sbprc->isRunning)
 			{
@@ -403,18 +531,20 @@ sub Check
 			}
 			else	#The Sub Process is already finished
 			{
-				$self->{"_report"} .= "Sub Process ${sprcnm}: "
-					. "already finished with [" . $sbprc->getProcessStatus . "]\n"
-          if($self->{"_debug"} > 0
-            && $self->{"_quiet"} < 1);
+			  if($sbprc->getProcessID > 0)
+			  {
+  				$self->{"_report"} .= "Sub Process ${sprcnm}: "
+  					. "already finished with [" . $sbprc->getProcessStatus . "]\n"
+            if($self->{"_debug"} > 0);
 
-				#$sbprc->freeResources;
-
+  				#$sbprc->freeResources;
+			  }  #if($sbprc->getProcessID > 0)
 			}	#if($sbprc->isRunning)
 		}	#foreach $sbprc (@{$self->{"_array_processes"}})
 	}	#if(defined $self->{"_array_processes"})
 
 
+  #Count the Running Sub Processes
 	return $irs;
 }
 
@@ -460,7 +590,7 @@ sub Wait
   if(scalar(keys %hshprms) > 0)
   {
     $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->{"_execution_timeout"} = $hshprms{"timeout"} if(defined $hshprms{"timeout"});
+    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
   }
 
   do  #while($irng > 0);
@@ -556,7 +686,7 @@ sub Run
   if(scalar(keys %hshprms) > 0)
   {
     $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->{"_execution_timeout"} = $hshprms{"timeout"} if(defined $hshprms{"timeout"});
+    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
   }
 
   if($self->Launch)
@@ -669,6 +799,7 @@ sub clearErrors()
 }
 
 
+
 #----------------------------------------------------------------------------
 #Consultation Methods
 
@@ -697,40 +828,103 @@ sub getiProcess
 }
 
 sub getCheckInterval {
-    my $self = shift;
+    my $self = $_[0];
 
     return $self->{"_check_interval"};
 }
 
 sub getProcessCount {
-    my $self = shift;
+    my $self = $_[0];
 
     return scalar(@{$self->{"_array_processes"}});
 }
 
-sub getReportString {
-    my $self = shift;
+sub getRunningCount
+{
+  my $self = $_[0];
+  my $irng = 0;
 
-    return \$self->{"_report"};
+
+  if(defined $self->{"_array_processes"})
+  {
+    foreach $sbprc (@{$self->{"_array_processes"}})
+    {
+      $irng++ if($sbprc->isRunning);
+    }
+  } #if(defined $self->{"_array_processes"})
+
+
+  return $irng;
 }
 
-sub getErrorCode {
-    my $self = shift;
+sub getFreeCount
+{
+  my $self = $_[0];
+  my $ifr = 0;
 
-    return $self->{"_error_code"};
+
+  if(defined $self->{"_array_processes"})
+  {
+    foreach $sbprc (@{$self->{"_array_processes"}})
+    {
+      $ifr++ unless($sbprc->isRunning);
+    }
+  } #if(defined $self->{"_array_processes"})
+
+
+  return $ifr;
 }
 
-sub getErrorString {
-    my $self = shift;
+sub getFinishedCount
+{
+  my $self = $_[0];
+  my $ifnshd = 0;
 
-    return \$self->{"_error_message"};
+
+  if(defined $self->{"_array_processes"})
+  {
+    foreach $sbprc (@{$self->{"_array_processes"}})
+    {
+      unless($sbprc->isRunning)
+      {
+        #The Sub Process was launched and has finished and was not reset yet
+        $ifnshd++ if($sbprc->getProcessID > 0);
+      }
+    } #foreach $sbprc (@{$self->{"_array_processes"}})
+  } #if(defined $self->{"_array_processes"})
+
+
+  return $ifnshd;
+}
+
+sub getReportString
+{
+  return \$_[0]->{"_report"};
+}
+
+sub getErrorCode
+{
+  return $_[0]->{"_error_code"};
+}
+
+sub getErrorString
+{
+  return \$_[0]->{"_error_message"};
 }
 
 sub isProfiling
 {
-  my $self = shift;
+  return $_[0]->{"_profiling"};
+}
 
-  return $self->{"_profiling"};
+sub isDebug
+{
+  return $_[0]->{"_debug"};
+}
+
+sub isQuiet
+{
+  return $_[0]->{"_quiet"};
 }
 
 
