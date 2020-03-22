@@ -29,6 +29,9 @@ package SubProcess;
 #----------------------------------------------------------------------------
 #Dependencies
 
+use Exporter 'import'; # gives you Exporter's import() method directly
+
+our @EXPORT_OK = qw(runSubProcess);  # symbols to export on request
 
 use POSIX ":sys_wait_h";
 use POSIX qw(strftime);

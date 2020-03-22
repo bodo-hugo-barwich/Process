@@ -29,6 +29,9 @@ BEGIN
 
 require_ok('SubProcess');
 
+use SubProcess qw(runSubProcess);
+
+
 
 my $smodule = "";
 my $spath = abs_path($0);
@@ -48,7 +51,7 @@ my $iscriptstatus = -1;
 
 
 ($rscriptlog, $rscripterror, $iscriptstatus)
-  = SubProcess::runSubProcess("${spath}${stestscript} $iscriptpause");
+  = runSubProcess("${spath}${stestscript} $iscriptpause");
 
 isnt($rscriptlog, undef, "STDOUT Ref is returned");
 
