@@ -20,13 +20,25 @@ use strict;
 
 use Cwd qw(abs_path);
 
+use Time::HiRes qw(gettimeofday);
+
+
+
+my $itm = -1;
+my $itmstrt = -1;
+my $itmend = -1;
+
+
+$itmstrt = gettimeofday();
+
+print "Start - Time Now: '$itmstrt' s\n";
 
 
 my $smodule = "";
-my $spath = abs_path($ARGV[0]);
+my $spath = abs_path($0);
 
-my $ipause = $ARGV[1];
-my $ierr = $ARGV[2];
+my $ipause = $ARGV[0];
+my $ierr = $ARGV[1];
 
 
 ($smodule = $spath) =~ s/.*\/([^\/]+)$/$1/;
@@ -54,6 +66,17 @@ sleep $ipause;
 print "script '$smodule' END 1\n";
 
 print STDERR "script '$smodule' END 1 ERROR\n";
+
+
+$itmend = gettimeofday();
+
+$itm = ($itmend - $itmstrt) * 1000;
+
+print "End - Time Now: '$itmend' s\n";
+
+print "script '$smodule' done in '$itm' ms\n";
+
+print "script '$smodule' EXIT '$ierr'\n";
 
 
 exit $ierr;

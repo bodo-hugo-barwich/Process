@@ -3,7 +3,7 @@
 # @author Bodo (Hugo) Barwich
 # @version 2020-03-21
 # @package SubProcess Management
-# @subpackage SubProcess.pm
+# @subpackage Process/SubProcess.pm
 
 # This Module defines the Class to manage a Subprocess and read its Output and Errors
 # It forks the Main Process to execute the Sub Process Funcionality
@@ -21,10 +21,19 @@
 
 
 #==============================================================================
-# The SubProcess Package
+# The Process::SubProcess Package
 
+=head1 NAME
 
-package SubProcess;
+Process::SubProcess - implements a Class to manage a Sub Process and read its Output and Errors
+
+The Idea of this API is to launch Sub Processes and keep track of all Output
+on C<STDOUT>, C<STDERR>, the Exit Code and possible System Errors at Launch Time
+within the Context of the External Programm.
+
+=cut
+
+package Process::SubProcess;
 
 #----------------------------------------------------------------------------
 #Dependencies
@@ -40,6 +49,17 @@ use IO::Select;
 
 use Data::Dump qw(dump);
 
+=head1 DESCRIPTION
+
+C<Process::SubProcess> is a class which implements a Data Set which can be filled up
+gradually without previous class definition.
+
+=head1 OVERVIEW
+
+
+
+=cut
+
 
 
 #----------------------------------------------------------------------------
@@ -48,7 +68,7 @@ use Data::Dump qw(dump);
 
 sub runSubProcess
 {
-  my $sbprc = SubProcess::new('SubProcess');
+  my $sbprc = Process::SubProcess::new('Process::SubProcess');
 
   my %hshprms = undef;
   #Return the Processing Report
@@ -98,58 +118,69 @@ sub runSubProcess
 #Constructors
 
 
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item new ( [ CONFIGURATIONS ] )
+
+This is the constructor for a new SubProcess.
+
+C<CONFIGURATIONS> are passed in a hash like fashion, using key and value pairs.
+
+=back
+
+=cut
+
 sub new {
-    my $invocant = shift;
-    my $class    = ref($invocant) || $invocant;
-    my $self     = undef;
-
-    #Take the Method Parameters
-    my %hshprms = @_;
+  #Take the Method Parameters
+  my ($invocant, %hshprms) =  @_;
+  my $class    = ref($invocant) || $invocant;
+  my $self     = undef;
 
 
-    #Set the Default Attributes
-    $self = {
-        "_pid"                => -1,
-        "_name"               => "",
-        "_command"            => undef,
-        "_log_pipe"           => undef,
-        "_error_pipe"         => undef,
-        "_pipe_selector"      => undef,
-        "_package_size" => 8192,
-        "_read_timeout" => 5,
-        "_check_interval" => -1,
-        "_execution_timeout" => -1,
-        "_report"             => "",
-        "_error_message"      => "",
-        "_error_code"         => 0,
-        "_process_status"     => -1,
-        "_execution_time" => -1,
-        "_profiling" => 0,
-        "_debug" => 0,
-        "_quiet" => 0
-    };
+  #Set the Default Attributes
+  $self = {'_pid' => -1
+    , '_name' => ''
+    , '_command' => undef
+    , '_log_pipe' => undef
+    , '_error_pipe' => undef
+    , '_pipe_selector'  => undef
+    , '_package_size' => 8192
+    , '_read_timeout' => 0
+    , '_check_interval' => -1
+    , '_execution_timeout' => -1
+    , '_report' => ''
+    , '_error_message' => ''
+    , '_error_code' => 0
+    , '_process_status' => -1
+    , '_execution_time' => -1
+    , '_profiling' => 0
+    , '_debug' => 0
+    , '_quiet' => 0
+  };
 
-    #Set initial Values
-    $self->{"_name"} = $hshprms{"name"} if ( defined $hshprms{"name"} );
-    $self->{"_command"} = $hshprms{"command"} if(defined $hshprms{"command"});
+  #Set initial Values
+  $self->{'_name'} = $hshprms{'name'} if(defined $hshprms{'name'});
+  $self->{'_command'} = $hshprms{'command'} if(defined $hshprms{'command'});
 
-    #Bestow Objecthood
-    bless $self, $class;
+  #Bestow Objecthood
+  bless $self, $class;
 
-    #Execute initial Configurations
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
-    $self->setProfiling($hshprms{"profiling"}) if(defined $hshprms{"profiling"});
-    $self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
-    $self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
+  #Execute initial Configurations
+  $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+  $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
+  $self->setProfiling($hshprms{'profiling'}) if(defined $hshprms{'profiling'});
+  $self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
+  $self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
 
 
-    #Give the Object back
-    return $self;
+  #Give the Object back
+  return $self;
 }
 
 sub DESTROY {
-    my $self = shift;
+    my $self = $_[0];
 
 
 	#Free the System Resources
@@ -161,6 +192,19 @@ sub DESTROY {
 #----------------------------------------------------------------------------
 #Administration Methods
 
+=head1 Administration Methods
+
+=over 4
+
+=item setArrProcess ( CONFIGURATIONS )
+
+This Method will asign Values to physically Data Fields.
+
+C<CONFIGURATIONS> is a list are passed in a hash like fashion, using key and value pairs.
+
+=back
+
+=cut
 
 sub setArrProcess
 {
@@ -209,53 +253,63 @@ sub set
 }
 
 sub setName {
-    my $self = shift;
+  my $self = $_[0];
 
 
-    $self->{"_name"} = shift;
-
-		$self->{"_name"} = "" unless(defined $self->{"_name"});
+  if(scalar(@_) > 1)
+  {
+    $self->{'_name'} = $_[1];
+  }
+  else
+  {
+    $self->{'_name'} = '';
+  }
 }
 
 sub setCommand {
-    my $self = shift;
+  my $self = $_[0];
 
 
 	#Attributes that cannot be changed in Running State
 	unless($self->isRunning)
 	{
-		if(scalar(@_) > 0)
+		if(scalar(@_) > 1)
 		{
-	    $self->{"_command"} = shift;
-		}	#if(scalar(@_) > 0)
+	    $self->{'_command'} = $_[1];
+		}
 
-    $self->{"_command"} = "" unless(defined $self->{"_command"});
+    $self->{'_command'} = '' unless(defined $self->{'_command'});
 
-    $self->{"_pid"} = -1;
-    $self->{"_process_status"} = -1;
+    $self->{'_pid'} = -1;
+    $self->{'_process_status'} = -1;
 	}	#unless($self->isRunning)
 }
 
 sub setCheckInterval
 {
-	my $self = shift;
+	my $self = $_[0];
 
 
-  if(scalar(@_) > 0)
+  if(scalar(@_) > 1)
   {
-    $self->{"_check_interval"} = shift;
-
-    $self->{"_check_interval"} = -1 unless($self->{"_check_interval"} =~ /^-?\d+$/);
+    if($_[0] =~ /^\d+$/)
+    {
+      $self->{'_check_interval'} = $_[1];
+    }
+    else
+    {
+      $self->{'_check_interval'} = -1;
+    }
   }
   else #No Parameters given
   {
     #Remove the Check Interval
-    $self->{"_check_interval"} = -1;
+    $self->{'_check_interval'} = -1;
   }	#if(scalar(@_) > 0)
 
-  $self->{"_check_interval"} = -1 unless(defined $self->{"_check_interval"});
+  $self->{'_check_interval'} = -1 unless(defined $self->{'_check_interval'});
 
-  $self->{"_check_interval"} = -1 if($self->{"_check_interval"} < -1);
+  $self->{'_check_interval'} = -1 if($self->{'_check_interval'} < -1);
 
   if($self->{"_check_interval"} > 1)
   {
@@ -270,20 +324,20 @@ sub setCheckInterval
 
 sub setReadTimeout
 {
-  my $self = shift;
+  my $self = $_[0];
 
 
-  if(scalar(@_) > 0)
+  if(scalar(@_) > 1)
   {
-    $self->{"_read_timeout"} = shift;
+    $self->{'_read_timeout'} = $_[1];
 
-    $self->{"_read_timeout"} = 1 unless($self->{"_read_timeout"} =~ /^-?\d+$/);
+    $self->{'_read_timeout'} = 1 unless($self->{'_read_timeout'} =~ /^-?\d+$/);
   }
   else #No Parameter was given
   {
     #Set the Minimum Read Timeout
     $self->{"_read_timeout"} = 1;
-  } #if(scalar(@_) > 0)
+  } #if(scalar(@_) > 1)
 
   #Set the Minimum Read Timeout
   $self->{"_read_timeout"} = 1 unless(defined $self->{"_read_timeout"});
@@ -294,23 +348,24 @@ sub setReadTimeout
 
 sub setTimeout
 {
-	my $self = shift;
+	my $self = $_[0];
 
 
-	if(scalar(@_) > 0)
+	if(scalar(@_) > 1)
 	{
-    $self->{"_execution_timeout"} = shift;
-
-    $self->{"_execution_timeout"} = -1 unless($self->{"_execution_timeout"} =~ /^-?\d+$/);
+	  if($_[1] =~ /^\d+$/)
+	  {
+      $self->{'_execution_timeout'} = $_[1];
+	  }
+	  else  #The Parameter is not an unsigned whole Number
+	  {
+      $self->{'_execution_timeout'} = -1 ;
+	  }
 	}
 	else #No Parameter was given
 	{
-	  $self->{"_execution_timeout"} = -1;
-	}	#if(scalar(@_) > 0)
-
-  $self->{"_execution_timeout"} = -1 unless(defined $self->{"_execution_timeout"});
-
-  $self->{"_execution_timeout"} = -1 if($self->{"_execution_timeout"} < -1);
+	  $self->{'_execution_timeout'} = -1;
+	}	#if(scalar(@_) > 1)
 }
 
 sub setProfiling
@@ -328,7 +383,7 @@ sub setProfiling
   else  #No Parameter was given
   {
     $self->{"_profiling"} = 1;
-  } #if(scalar(@_) > 0)
+  } #if(scalar(@_) > 1)
 
   $self->{"_profiling"} = 0 unless(defined $self->{"_profiling"});
 
@@ -724,7 +779,7 @@ sub Check
 
 sub Read
 {
-	my $self = shift;
+	my $self = $_[0];
 
 
 	$self->{"_report"} .= "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"});
@@ -1169,36 +1224,31 @@ sub getErrorCode {
     return $self->{"_error_code"};
 }
 
-sub getProcessStatus {
-    my $self = shift;
+sub getProcessStatus
+{
+  my $self = shift;
 
-    return $self->{"_process_status"};
+  return $self->{"_process_status"};
 }
 
 sub getExecutionTime
 {
-  my $self = shift;
-
-  return $self->{"_execution_time"};
+  return $_[0]->{'_execution_time'};
 }
 
 sub isProfiling
 {
-  my $self = shift;
-
-  return $self->{"_profiling"};
+  return $_[0]->{'_profiling'};
 }
 
-sub isDebug {
-    my $self = shift;
-
-    return $self->{"_debug"};
+sub isDebug
+{
+  return $_[0]->{"_debug"};
 }
 
-sub isQuiet {
-    my $self = shift;
-
-    return $self->{"_quiet"};
+sub isQuiet
+{
+  return $_[0]->{"_quiet"};
 }
 
 

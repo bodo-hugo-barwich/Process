@@ -27,9 +27,9 @@ BEGIN
   use lib "../lib";
 }  #BEGIN
 
-require_ok('SubProcess');
+require_ok('Process::SubProcess');
 
-use SubProcess qw(runSubProcess);
+use Process::SubProcess qw(runSubProcess);
 
 
 
@@ -48,6 +48,8 @@ my $rscriptlog = undef;
 my $rscripterror = undef;
 my $iscriptstatus = -1;
 
+
+print "Test: 'STDOUT , STDERR and EXIT CODE' do ...\n";
 
 
 ($rscriptlog, $rscripterror, $iscriptstatus)
@@ -76,6 +78,34 @@ if(defined $rscripterror)
 
   print("STDERR: '$$rscripterror'\n");
 } #if(defined $rscripterror)
+
+print "\n";
+
+print "Test: 'Profiling' do ...\n";
+
+($rscriptlog, $rscripterror, $iscriptstatus)
+  = runSubProcess(('command' => $spath . $stestscript, 'profiling' => 1));
+
+print("EXIT CODE: '$iscriptstatus'\n");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+else
+{
+  isnt($$rscriptlog, undef, "STDOUT was captured");
+} #if(defined $rscriptlog)
+
+if(defined $rscripterror)
+{
+  print("STDERR: '$$rscripterror'\n");
+}
+else
+{
+  isnt($$rscripterror, undef, "STDERR was captured");
+} #if(defined $rscripterror)
+
 
 done_testing();
 

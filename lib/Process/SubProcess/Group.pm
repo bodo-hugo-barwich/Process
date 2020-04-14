@@ -44,7 +44,7 @@ use POSIX qw(strftime);
 use Scalar::Util 'blessed';
 use Data::Dump qw(dump);
 
-use SubProcess;
+use Process::SubProcess;
 
 
 
@@ -149,8 +149,8 @@ sub add
     }
     else  #No Parameters given
     {
-      #Create a SubProcess Object by Default
-      $rsprc = SubProcess::->new;
+      #Create a Process::SubProcess Object by Default
+      $rsprc = Process::SubProcess::->new;
     }
   } #unless(defined $rsprc)
 
@@ -168,24 +168,24 @@ sub add
 
   if(defined $rsprc)
   {
-  	unless ( $rsprc->isa("ChildProcess")
-  		|| $rsprc->isa("SubProcess") )
+  	unless ( $rsprc->isa("Process::ChildProcess")
+  		|| $rsprc->isa("Process::SubProcess") )
   	{
   		$rsprc = undef;
 
-  		$rsprc = SubProcess::->new;
+  		$rsprc = Process::SubProcess::->new;
   	}
   }
   else  #Sub Process Object was not created yet
   {
     #Create a SubProcess Object by Default
-    $rsprc = SubProcess::->new;
+    $rsprc = Process::SubProcess::->new;
   } #if(defined $rsprc)
 
 	if(defined $rsprc)
 	{
-		if($rsprc->isa("ChildProcess")
-			|| $rsprc->isa("SubProcess"))
+		if($rsprc->isa("Process::ChildProcess")
+			|| $rsprc->isa("Process::SubProcess"))
 		{
 			push @{$self->{_array_processes}}, ($rsprc);
 
