@@ -1206,29 +1206,24 @@ sub isRunning {
     return $irng;
 }
 
-sub getReportString {
-    my $self = shift;
-
-    return \$self->{"_report"};
+sub getReportString 
+{
+  return \$_[0]->{"_report"};
 }
 
-sub getErrorString {
-    my $self = shift;
-
-    return \$self->{"_error_message"};
+sub getErrorString 
+{
+  return \$_[0]->{"_error_message"};
 }
 
-sub getErrorCode {
-    my $self = shift;
-
-    return $self->{"_error_code"};
+sub getErrorCode 
+{
+  return $_[0]->{"_error_code"};
 }
 
 sub getProcessStatus
 {
-  my $self = shift;
-
-  return $self->{"_process_status"};
+  return $_[0]->{"_process_status"};
 }
 
 sub getExecutionTime

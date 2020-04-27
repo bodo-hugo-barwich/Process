@@ -22,7 +22,7 @@
 
 
 BEGIN {
-    use lib "../../lib";
+    use lib '../../../lib';
 }  #BEGIN
 
 
@@ -30,23 +30,23 @@ BEGIN {
 
 
 #==============================================================================
-# The SubProcess::Pool Package
+# The Process::SubProcess::Pool Package
 
 
-package SubProcess::Pool;
+package Process::SubProcess::Pool;
 
 #----------------------------------------------------------------------------
 #Dependencies
 
 
-use parent "SubProcess::Group";
+use parent 'Process::SubProcess::Group';
 
 use POSIX qw(strftime);
 use Scalar::Util 'blessed';
 
 use Data::Dump qw(dump);
 
-use SubProcess;
+use Process::SubProcess;
 
 
 

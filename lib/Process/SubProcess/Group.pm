@@ -25,16 +25,16 @@
 
 
 BEGIN {
-    use lib "../../lib";
+  use lib '../../../lib';
 }  #BEGIN
 
 
 
 #==============================================================================
-# The SubProcess::Group Package
+# The Process::SubProcess::Group Package
 
 
-package SubProcess::Group;
+package Process::SubProcess::Group;
 
 #----------------------------------------------------------------------------
 #Dependencies
