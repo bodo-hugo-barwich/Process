@@ -91,9 +91,131 @@ print "\n";
 
 
 #------------------------
-#Test: 'Profiling'
+#Test: 'Script not found'
 
 my $proctest = undef;
+
+
+print "Test: 'Script not found' do ...\n";
+
+$proctest = Process::SubProcess::->new(('command' => $spath . 'no_script.sh'));
+
+is($proctest->Run, 0, "script 'no_script.sh': Execution failed");
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+is($proctest->getErrorCode, 1, "ERROR CODE '1' is correct");
+
+is($iscriptstatus, 2, "EXIT CODE '2' is correct");
+
+isnt($rscripterror, undef, "STDERR Ref is returned");
+
+if(defined $rscripterror)
+{
+  ok($$rscripterror =~ qr/no such file/i, "STDERR has Not Found Error");
+
+  print("STDERR: '$$rscripterror'\n");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+#------------------------
+#Test: 'No Permission'
+
+print "Test: 'No Permission' do ...\n";
+
+
+$proctest = Process::SubProcess::->new(('command' => $spath . 'noexec_script.pl'));
+
+is($proctest->Run, 0, "script 'noexec_script.pl': Execution failed");
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+is($proctest->getErrorCode, 1, "ERROR CODE '1' is correct");
+
+is($iscriptstatus, 13, "EXIT CODE '13' is correct");
+
+isnt($rscripterror, undef, "STDERR Ref is returned");
+
+if(defined $rscripterror)
+{
+  ok($$rscripterror =~ qr/permission denied/i, "STDERR has No Permission Error");
+
+  print("STDERR: '$$rscripterror'\n");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+#------------------------
+#Test: 'Sub Process Bash Error'
+
+print "Test: 'Sub Process Bash Error' do ...\n";
+
+
+$proctest = Process::SubProcess::->new(('command' => $spath . 'nobashbang_script.pl'));
+
+is($proctest->Launch, 1, "script 'nobashbang_script.pl': Launch succeed");
+is($proctest->Wait, 1, "script 'nobashbang_script.pl': Execution finished correctly");
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+is($proctest->getErrorCode, 1, "ERROR CODE '1' is correct");
+
+is($iscriptstatus, 2, "EXIT CODE '2' is correct");
+
+isnt($rscripterror, undef, "STDERR Ref is returned");
+
+if(defined $rscripterror)
+{
+  ok($$rscripterror =~ qr/syntax error/i, "STDERR has Bash Error");
+
+  print("STDERR: '$$rscripterror'\n");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+#------------------------
+#Test: 'Sub Process Perl Exception'
+
+print "Test: 'Sub Process Perl Exception' do ...\n";
+
+
+$proctest = Process::SubProcess::->new(('command' => $spath . 'exception_script.pl'));
+
+is($proctest->Launch, 1, "script 'exception_script.pl': Launch succeed");
+is($proctest->Wait, 1, "script 'exception_script.pl': Execution finished correctly");
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+is($proctest->getErrorCode, 1, "ERROR CODE '1' is correct");
+
+is($iscriptstatus, 255, "EXIT CODE '255' is correct");
+
+isnt($rscripterror, undef, "STDERR Ref is returned");
+
+if(defined $rscripterror)
+{
+  ok($$rscripterror =~ qr/script died/i, "STDERR has Perl Exception");
+
+  print("STDERR: '$$rscripterror'\n");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+#------------------------
+#Test: 'Profiling'
 
 my $itm = -1;
 my $itmstrt = -1;

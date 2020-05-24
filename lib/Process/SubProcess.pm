@@ -504,7 +504,6 @@ sub Launch
     my $errorreader = undef;
 
     my $serr = '';
-    my $ierr = 0;
 
 
     $errorreader = gensym;
@@ -544,12 +543,11 @@ sub Launch
     if($@)
     {
       $self->{'_pid'} = -1;
-      $self->{'_process_status'} = 1;
 
       # Check for open3() Exception
       # according to documentation at :
       # https://perldoc.perl.org/IPC/Open3.html
-      if($@ =~ /^open3: (.*)$/m)
+      if($@ =~ qr/^open3: (.*)$/m)
       {
         $serr = $1;
       }
@@ -558,17 +556,11 @@ sub Launch
         $serr = $@;
       }
 
-      $self->{'_error_message'} .= "ERROR: Sub Process '${sprcnm}' Launch failed with ["
-        . $self->{'_process_status'} . "]\n"
-        . "Message: '$serr'\n";
+      #Cut Script Reference off
+      $serr = $1 if($serr =~ qr/(.*) at .* line .*\./);
 
-      unless($self->{'_quiet'})
-      {
-        #Failure without Error Code or Message
-        print STDERR "Command '" . $self->{"_command"} . "': Command failed with ["
-          . $self->{"_process_status"} . "]!\n"
-          . "Message: '$serr'\n";
-      }
+      $self->{'_error_message'} .= "ERROR: Sub Process ${sprcnm}: Launch failed with Exception!\n"
+        . "Message: '$serr'\n";
 
       #Mark the Command as failed
       $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
@@ -579,17 +571,9 @@ sub Launch
       $self->{'_pid'} = -1;
       $self->{'_process_status'} = ($! + 0);
 
-      $self->{'_error_message'} .= "ERROR: Sub Process '${sprcnm}' Launch failed with ["
+      $self->{'_error_message'} .= "ERROR: Sub Process ${sprcnm}: Launch failed with System Error ["
         . $self->{'_process_status'} . "]\n"
         . "Message: '$!'\n";
-
-      unless($self->{'_quiet'})
-      {
-        #Read the Error Message
-        print STDERR "Command '" . $self->{'_command'} . "': Command failed with ["
-          . $self->{"_process_status"} . "]!\n"
-          . "Message: '$!'\n";
-      }
 
       #Mark the Command as failed
       $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
