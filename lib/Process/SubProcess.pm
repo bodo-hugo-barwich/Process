@@ -325,14 +325,18 @@ sub setCheckInterval
 
   $self->{'_check_interval'} = -1 if($self->{'_check_interval'} < -1);
 
-  if($self->{"_check_interval"} > 1)
+  if($self->{'_check_interval'} > 0)
   {
-  	$self->{"_read_timeout"} = $self->{"_check_interval"} - 1
-      if($self->{"_check_interval"} < $self->{"_read_timeout"});
+  	$self->{'_read_timeout'} = $self->{'_check_interval'} - 1
+      if($self->{'_check_interval'} > 0
+        && $self->{'_check_interval'} < $self->{'_check_interval'});
+
+    #Disable the Profiling Feature
+    $self->{'_profiling'} = 0;
   }
   else #Set the Default Read Timeout
   {
-  	$self->{"_read_timeout"} = 0;
+  	$self->{'_check_interval'} = 0;
   }
 }
 
@@ -352,14 +356,22 @@ sub setReadTimeout
   {
     #Enable the Read Timeout
     #Set the Minimum Read Timeout
-    $self->{"_read_timeout"} = 1;
+    $self->{'_read_timeout'} = 1;
   } #if(scalar(@_) > 1)
 
   #Set the Default Read Timeout
-  $self->{"_read_timeout"} = 0 unless(defined $self->{"_read_timeout"});
+  $self->{'_read_timeout'} = 0 unless(defined $self->{'_read_timeout'});
 
-  #Disable the Read Timeout
-  $self->{"_read_timeout"} = 0 if($self->{"_read_timeout"} < 0);
+  if($self->{'_read_timeout'} > 0)
+  {
+    #Disable the Profiling Feature
+    $self->{'_profiling'} = 0;
+  }
+  else
+  {
+    #Disable the Read Timeout
+    $self->{'_read_timeout'} = 0;
+  }
 }
 
 sub setTimeout
@@ -386,30 +398,31 @@ sub setTimeout
 
 sub setProfiling
 {
-  my $self = shift;
+  my $self = $_[0];
 
 
-  if(scalar(@_) > 0)
+  if(scalar(@_) > 1)
   {
-    $self->{"_profiling"} = shift;
+    $self->{'_profiling'} = $_[1];
 
     #The Parameter is not a Number
-    $self->{"_profiling"} = 0 unless($self->{"_profiling"} =~ /^-?\d+$/);
+    $self->{'_profiling'} = 0 unless($self->{'_profiling'} =~ /^-?\d+$/);
   }
   else  #No Parameter was given
   {
-    $self->{"_profiling"} = 1;
+    #Enable Profiling
+    $self->{'_profiling'} = 1;
   } #if(scalar(@_) > 1)
 
-  $self->{"_profiling"} = 0 unless(defined $self->{"_profiling"});
+  $self->{'_profiling'} = 0 unless(defined $self->{'_profiling'});
 
-  if($self->{"_profiling"} > 1)
+  if($self->{'_profiling'} > 1)
   {
-    $self->{"_profiling"} = 1;
+    $self->{'_profiling'} = 1;
   }
-  elsif($self->{"_profiling"} < 0)
+  elsif($self->{'_profiling'} < 0)
   {
-    $self->{"_profiling"} = 0;
+    $self->{'_profiling'} = 0;
   }
 }
 
@@ -917,9 +930,9 @@ sub Read
 
 sub Wait
 {
-	my $self = shift;
+	my $self = $_[0];
 	#Take the Method Parameters
-	my %hshprms = @_;
+	my %hshprms = @_[1..$#_];
 	my $irng = -1;
 	my $irs = 0;
 
@@ -933,7 +946,7 @@ sub Wait
 	my $itmrngend = -1;
 
 
-	print "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+	print '' . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
 
 
 	if(scalar(keys %hshprms) > 0)
@@ -1024,13 +1037,13 @@ sub Wait
 
 sub Run
 {
-	my $self = shift;
+	my $self = $_[0];
 	#Take the Method Parameters
-	my %hshprms = @_;
+	my %hshprms = @_[1..$#_];
 	my $irs = 0;
 
 
-	print "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+	print '' . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
 
 	my $sprcnm = $self->getNameComplete;
 

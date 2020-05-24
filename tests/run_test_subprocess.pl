@@ -150,6 +150,77 @@ else
   isnt($$rscripterror, undef, "STDERR was captured");
 } #if(defined $rscripterror)
 
+print "\n";
+
+
+#------------------------
+#Test: 'Read Timeout'
+
+$proctest = undef;
+
+$itestpause = 3;
+
+$itm = -1;
+$itmstrt = -1;
+$itmend = -1;
+$itmexe = -1;
+
+
+print "Test: 'Read Timeout' do ...\n";
+
+$proctest = Process::SubProcess::->new(('command' => $spath . $stestscript . ' ' . $itestpause
+  , 'profiling' => 1));
+
+$proctest->setReadTimeout(2);
+
+is($proctest->getReadTimeout, 2, 'Read Timeout activated');
+
+is($proctest->isProfiling, 0, 'Profiling deactivated');
+
+$itmstrt = gettimeofday();
+
+print "script '$stestscript' Start - Time Now: '$itmstrt' s\n";
+
+is($proctest->Run, 1, "script '$stestscript': Execution correct");
+
+$itmend = gettimeofday();
+
+$itm = ($itmend - $itmstrt) * 1000;
+
+print "script '$stestscript' End - Time Now: '$itmend' s\n";
+
+print "script '$stestscript' run in '$itm' ms\n";
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+is($proctest->getExecutionTime, -1 , "Execution Time was not measured");
+
+print("Execution Time: '", $proctest->getExecutionTime, "'\n");
+
+print("EXIT CODE: '$iscriptstatus'\n");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+else
+{
+  isnt($$rscriptlog, undef, "STDOUT was captured");
+} #if(defined $rscriptlog)
+
+if(defined $rscripterror)
+{
+  print("STDERR: '$$rscripterror'\n");
+}
+else
+{
+  isnt($$rscripterror, undef, "STDERR was captured");
+} #if(defined $rscripterror)
+
+print "\n";
+
 
 done_testing();
 
