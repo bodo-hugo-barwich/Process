@@ -44,7 +44,8 @@ $spath =~ s/^(.*\/)$smodule$/$1/;
 
 
 my $stestscript = "test_subprocess.pl";
-my $iscriptpause = 3;
+my $itestpause = 3;
+my $iteststatus = 4;
 
 my $rscriptlog = undef;
 my $rscripterror = undef;
@@ -57,7 +58,7 @@ my $iscriptstatus = -1;
 print "Test: 'runSubProcess() Function' do ...\n";
 
 ($rscriptlog, $rscripterror, $iscriptstatus)
-  = runSubProcess("${spath}${stestscript} $iscriptpause");
+  = runSubProcess("${spath}${stestscript} $itestpause $iteststatus");
 
 
 isnt($rscriptlog, undef, "STDOUT Ref is returned");
@@ -67,6 +68,8 @@ isnt($rscripterror, undef, "STDERR Ref is returned");
 isnt($iscriptstatus, undef, "EXIT CODE is returned");
 
 ok($iscriptstatus =~ qr/^-?\d$/, "EXIT CODE is numeric");
+
+is($iscriptstatus, $iteststatus, 'EXIT CODE is correct');
 
 print("EXIT CODE: '$iscriptstatus'\n");
 
@@ -100,7 +103,7 @@ my $itmexe = -1;
 
 print "Test: 'Profiling' do ...\n";
 
-$proctest = Process::SubProcess::->new(('command' => "date +\"%s.%N\" ;" . $spath . $stestscript . " ; date +\"%s.%N\""
+$proctest = Process::SubProcess::->new(('command' => $spath . $stestscript
   , 'profiling' => 1));
 
 is($proctest->isProfiling, 1, 'Profiling activated');

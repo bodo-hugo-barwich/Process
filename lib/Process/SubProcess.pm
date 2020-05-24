@@ -45,9 +45,14 @@ our @EXPORT_OK = qw(runSubProcess);  # symbols to export on request
 use POSIX ":sys_wait_h";
 use POSIX qw(strftime);
 use Time::HiRes qw(gettimeofday);
+
 use IO::Select;
 
+use IPC::Open3;
+use Symbol qw(gensym);
+
 use Data::Dump qw(dump);
+
 
 =head1 DESCRIPTION
 
@@ -64,6 +69,11 @@ gradually without previous class definition.
 
 #----------------------------------------------------------------------------
 #Static Methods
+
+use constant FLAG_STDIN => 0;
+use constant FLAG_STDOUT => 1;
+use constant FLAG_STDERR => 2;
+use constant FLAG_ANYOUT => 3;
 
 
 sub runSubProcess
@@ -143,9 +153,11 @@ sub new {
   $self = {'_pid' => -1
     , '_name' => ''
     , '_command' => undef
+    , '_input_pipe' => undef
     , '_log_pipe' => undef
     , '_error_pipe' => undef
     , '_pipe_selector'  => undef
+    , '_pipe_flags'  => undef
     , '_package_size' => 8192
     , '_read_timeout' => 0
     , '_check_interval' => -1
@@ -154,6 +166,8 @@ sub new {
     , '_error_message' => ''
     , '_error_code' => 0
     , '_process_status' => -1
+    , '_start_time' => -1
+    , '_end_time' => -1
     , '_execution_time' => -1
     , '_profiling' => 0
     , '_debug' => 0
@@ -316,9 +330,9 @@ sub setCheckInterval
   	$self->{"_read_timeout"} = $self->{"_check_interval"} - 1
       if($self->{"_check_interval"} < $self->{"_read_timeout"});
   }
-  else #Set the Minimum Read Timeout
+  else #Set the Default Read Timeout
   {
-  	$self->{"_read_timeout"} = 1;
+  	$self->{"_read_timeout"} = 0;
   }
 }
 
@@ -331,19 +345,21 @@ sub setReadTimeout
   {
     $self->{'_read_timeout'} = $_[1];
 
-    $self->{'_read_timeout'} = 1 unless($self->{'_read_timeout'} =~ /^-?\d+$/);
+    #Set the Default Read Timeout
+    $self->{'_read_timeout'} = 0 unless($self->{'_read_timeout'} =~ /^-?\d+$/);
   }
   else #No Parameter was given
   {
+    #Enable the Read Timeout
     #Set the Minimum Read Timeout
     $self->{"_read_timeout"} = 1;
   } #if(scalar(@_) > 1)
 
-  #Set the Minimum Read Timeout
-  $self->{"_read_timeout"} = 1 unless(defined $self->{"_read_timeout"});
+  #Set the Default Read Timeout
+  $self->{"_read_timeout"} = 0 unless(defined $self->{"_read_timeout"});
 
-  #Set the Minimum Read Timeout
-  $self->{"_read_timeout"} = 1 if($self->{"_read_timeout"} < 1);
+  #Disable the Read Timeout
+  $self->{"_read_timeout"} = 0 if($self->{"_read_timeout"} < 0);
 }
 
 sub setTimeout
@@ -455,209 +471,157 @@ sub setQuiet
 
 sub Launch
 {
-	my $self = shift;
+	my $self = $_[0];
 	my $irs = 0;
 
 	my $sprcnm  = $self->getNameComplete;
 
 
-	$self->{"_report"} .= "" . (caller(0))[3] . " - go ...\n"
-    if($self->{"_debug"});
+	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n"
+    if($self->{'_debug'});
 
-  $self->{"_pid"} = -1;
+  $self->{'_pid'} = -1;
 
-	if(defined $self->{"_command"}
-		&& $self->{"_command"} ne "")
+	if(defined $self->{'_command'}
+		&& $self->{'_command'} ne '')
 	{
-		local *logreader;
-		local *errorreader;
-		my $logwriter   = undef;
-		my $errorwriter = undef;
-    my $iprcpid = -1;
+    # handles for stdin/stdout/stderr
+    my $inputwriter = undef;
+    my $logreader = undef;
+    my $errorreader = undef;
+
+    my $serr = '';
+    my $ierr = 0;
 
 
-		pipe(*logreader, $logwriter);
-		pipe(*errorreader, $errorwriter);
+    $errorreader = gensym;
 
-    $self->{"_report"} .= "Sub Process ${sprcnm}: Launching ...\n"
-      if($self->{"_debug"});
-
-		#Spawn the Child Process
-		$iprcpid = fork();
-
-		#Check the Success of Process Forking
-		if(defined $iprcpid)
-		{
-			#------------------------
-			#Sub Process Launch succeeded
-
-			# Check whether parent/child process
-			if($iprcpid > 0)
-			{
-				#------------------------
-				#Parent Process
-
-				close($logwriter);
-				close($errorwriter);
+    $self->{'_report'} .= "Sub Process ${sprcnm}: Launching ...\n"
+      if($self->{'_debug'});
 
 
-				$self->{"_pid"} = $iprcpid;
-				$self->{"_process_status"} = -1;
-        $self->{"_execution_time"} = -1;
+    #------------------------
+    #Execute the configured Command
 
-				$self->{"_log_pipe"}   = *logreader;
-				$self->{"_error_pipe"} = *errorreader;
+    $self->{'_report'} .= "cmd: '" . $self->{'_command'} . "'\n" if($self->{'_debug'});
 
-				$self->{"_pipe_selector"} = IO::Select->new();
+    #print "sleep 30 sec: go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
 
-				$self->{"_pipe_selector"}->add(*logreader);
-				$self->{"_pipe_selector"}->add(*errorreader);
+    #sleep 30;
 
-        $self->{"_pipe_readbytes"} = 0;
+    #print "sleep 30 sec: done.\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
 
-				$self->{"_report"} .= "Sub Process ${sprcnm}: Launch OK - PID ($iprcpid)\n"
-				  if($self->{"_debug"});
+    $self->{'_report'} .= "cmd pfg '" . $self->{'_profiling'} . "'\n" if($self->{'_debug'});
 
-			}
-			elsif($iprcpid == 0)
-			{
-				#------------------------
-				#Child Process
+    if($self->{'_profiling'})
+    {
+      $self->{'_start_time'} = gettimeofday;
+    } #if($self->{"_profiling"})
 
-				my $ierr = 0;
+    eval
+    {
+      #Reset any previous Errors
+      $! = 0;
 
-        my $itmcmd = -1;
-        my $itmcmdstrt = -1;
-        my $itmcmdend = -1;
+      #Spawn the Child Process
+      $self->{'_pid'} = open3($inputwriter, $logreader, $errorreader, $self->{'_command'});
 
+    };  #eval
 
-				close(*logreader);
-				close(*errorreader);
+    if($@)
+    {
+      $self->{'_pid'} = -1;
+      $self->{'_process_status'} = 1;
 
-				open(STDOUT, ">&=", $logwriter);
-				open(STDERR, ">&=", $errorwriter);
+      # Check for open3() Exception
+      # according to documentation at :
+      # https://perldoc.perl.org/IPC/Open3.html
+      if($@ =~ /^open3: (.*)$/m)
+      {
+        $serr = $1;
+      }
+      else
+      {
+        $serr = $@;
+      }
 
+      $self->{'_error_message'} .= "ERROR: Sub Process '${sprcnm}' Launch failed with ["
+        . $self->{'_process_status'} . "]\n"
+        . "Message: '$serr'\n";
 
-        #------------------------
-        #Execute the configured Command
+      unless($self->{'_quiet'})
+      {
+        #Failure without Error Code or Message
+        print STDERR "Command '" . $self->{"_command"} . "': Command failed with ["
+          . $self->{"_process_status"} . "]!\n"
+          . "Message: '$serr'\n";
+      }
 
-				print "cmd: '" . $self->{"_command"} . "'\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+      #Mark the Command as failed
+      $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
+    } #if($@)
 
-        #print "tired 30 sec ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+    if($!)
+    {
+      $self->{'_pid'} = -1;
+      $self->{'_process_status'} = ($! + 0);
 
-        #sleep 30;
-
-        print "cmd rng ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
-
-        print "cmd pfg '" . $self->{"_profiling"} . "'\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
-
-        if($self->{"_profiling"})
-        {
-          $itmcmdstrt = gettimeofday;
-        } #if($self->{"_profiling"})
-
-				print `$self->{"_command"}`;
-
-				if($self->{"_profiling"})
-        {
-          $itmcmdend = gettimeofday;
-
-          $itmcmd = sprintf("%.6f", $itmcmdend - $itmcmdstrt);
-        } #if($self->{"_profiling"})
-
-				$ierr = $?;
-
-        print "Time Execution: '$itmcmd' s\n" if($self->{"_profiling"});
-
-        print "cmd fnshd [$ierr].\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
-
-        #print "sleepy 30\n";
-
-        #sleep 30;
-
-        if($ierr >= 0)
-        {
-  				print "cmd stt cd: '$? / $ierr >> " . ( $ierr >> 8 ) . "'\n"
-  					if($self->{"_debug"} > 0
-              && $self->{"_quiet"} < 1);
-
-          $ierr = ($ierr >> 8) if($ierr > 0);
-
-          if($!)
-          {
-            #Read the Error Code
-            $ierr = ($! + 0);
-
-            #Read the Error Message
-            print STDERR "Message [$ierr]: '$!'\n" unless($self->{"_quiet"});
-          } #if($!)
-        }
-        else  #A Negative Error Code was given
-        {
-          if($!)
-          {
-            #Read the Error Code
-            $ierr = ($! + 0);
-
-            unless($self->{"_quiet"})
-            {
-              #Read the Error Message
-              print STDERR "Command '" . $self->{"_command"} . "': Command failed with [$ierr]!\n"
-                . "Message: '$!'\n";
-            }
-          }
-          else  #Error Code is not set
-          {
-            #Failure without Error Code or Message
-            print STDERR "Command '" . $self->{"_command"} . "': Command failed with [$ierr]!\n"
-              unless($self->{"_quiet"});
-
-            #Mark the Command as failed
-            $ierr = 1;
-          } #if($!)
-        } #if($ierr >= 0)
-
-        print "sb prc closing transmission ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
-
-
-				close STDOUT;
-				close STDERR;
-
-
-				exit $ierr; # It is STRONGLY recommended to exit your child process
-										# instead of continuing to run the parent script.
-			}
-			else	#An Error has ocurred in the Sub Process Launch
-			{
-				# Unable to fork
-				$self->{"_error_message"} .= "ERROR: Sub Process '${sprcnm}' Launch failed with ["
-				  . ($! + 0) . "]\n"
-					. "Message: '$!'\n";
-
-				$self->{"_error_code"} = 1 if($self->{"_error_code"} < 1);
-			}	#if($iprcpid > 0)
-		}
-		else	#An Error has ocurred in the Process Spawning
-		{
-			# Unable to fork
-      $self->{"_error_message"} .= "ERROR: Sub Process '${sprcnm}' Launch failed with ["
-        . ($! + 0) . "]\n"
+      $self->{'_error_message'} .= "ERROR: Sub Process '${sprcnm}' Launch failed with ["
+        . $self->{'_process_status'} . "]\n"
         . "Message: '$!'\n";
 
-			$self->{"_error_code"} = 1 if($self->{"_error_code"} < 1);
-		}	#if(defined $iprcpid)
+      unless($self->{'_quiet'})
+      {
+        #Read the Error Message
+        print STDERR "Command '" . $self->{'_command'} . "': Command failed with ["
+          . $self->{"_process_status"} . "]!\n"
+          . "Message: '$!'\n";
+      }
+
+      #Mark the Command as failed
+      $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
+    } #if($!)
+
+		# Check whether parent/child process
+		if($self->{'_pid'} > 0)
+		{
+      #------------------------
+      #Sub Process Launch succeeded
+
+			$self->{'_process_status'} = -1;
+      $self->{'_execution_time'} = -1;
+
+      $self->{'_input_pipe'} = $inputwriter;
+			$self->{'_log_pipe'}   = $logreader;
+			$self->{'_error_pipe'} = $errorreader;
+
+			$self->{'_pipe_selector'} = IO::Select->new();
+
+      #Close the Process Input Pipe
+      close $self->{'_input_pipe'};
+
+			$self->{'_pipe_selector'}->add($logreader);
+			$self->{'_pipe_selector'}->add($errorreader);
+
+      $self->{'_pipe_readbytes'} = 0;
+
+			$self->{'_report'} .= "Sub Process ${sprcnm}: Launch OK - PID (" . $self->{'_pid'} . ")\n"
+			  if($self->{'_debug'});
+
+		}	#if($iprcpid > 0)
 	}
 	else	#Executable Command is empty
 	{
-		$self->{"_error_message"} .= "ERROR: Sub Process '${sprcnm}' Launch failed!\n"
+		$self->{'_error_message'} .= "ERROR: Sub Process '${sprcnm}' Launch failed!\n"
 			. "Executable Command is not set or is empty.\n";
 
-		$self->{"_error_code"} = 2 unless(defined $self->{"_error_code"});
-		$self->{"_error_code"} = 2 if($self->{"_error_code"} < 2);
+		$self->{'_error_code'} = 2 unless(defined $self->{'_error_code'});
+		$self->{'_error_code'} = 2 if($self->{'_error_code'} < 2);
 
 	}	#if(defined $self->{"_command"} && $self->{"_command"} ne "")
 
-  $irs = 1 if($self->{"_pid"} > 0);
+  #The Launch was successful if a Process ID was given
+  $irs = 1 if($self->{'_pid'} > 0);
 
 
   return $irs;
@@ -665,19 +629,19 @@ sub Launch
 
 sub Check
 {
-	my $self = shift;
+	my $self = $_[0];
 
 	my $sprcnm = $self->getNameComplete;
 	my $irng = 0;
 
 
-  $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
-    if($self->{"_debug"});
+  $self->{'_report'} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
+    if($self->{'_debug'});
 
-	$self->{"_report"} .= "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"});
+	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
-	if(defined $self->{"_pid"}
-		&& $self->{"_pid"} > -1)
+	if(defined $self->{'_pid'}
+		&& $self->{'_pid'} > -1)
 	{
 		#------------------------
 		#Check Child Process running or finished
@@ -685,11 +649,11 @@ sub Check
 		my $ifnshpid = -1;
 
 
-		$ifnshpid = waitpid($self->{"_pid"}, WNOHANG);
+		$ifnshpid = waitpid($self->{'_pid'}, WNOHANG);
 
-		$self->{"_report"} .= "" . (caller(0))[3] . " - wait on (" . $self->{"_pid"}
+		$self->{'_report'} .= "" . (caller(0))[3] . " - wait on (" . $self->{'_pid'}
 		  . ") - fnsh pid: ($ifnshpid); stt cd: [$?]\n"
-			if($self->{"_debug"});
+			if($self->{'_debug'});
 
 		if($ifnshpid > -1)
 		{
@@ -700,8 +664,8 @@ sub Check
 
 				$irng = 1;
 
-				$self->{"_report"} .= "prc (" . $self->{"_pid"} . "): Read checking ...\n"
-					if($self->{"_debug"});
+				$self->{'_report'} .= "prc (" . $self->{'_pid'} . "): Read checking ...\n"
+					if($self->{'_debug'});
 
 				#Read the Messages from the Sub Process
 				$self->Read;
@@ -712,22 +676,73 @@ sub Check
 				#------------------------
 				#A Child Process has finished
 
-				$self->{"_report"} .= "prc ($ifnshpid): done.\n" if($self->{"_debug"});
+				$self->{'_report'} .= "prc ($ifnshpid): done.\n" if($self->{'_debug'});
 
-				if($ifnshpid == $self->{"_pid"})
+				if($ifnshpid == $self->{'_pid'})
 				{
 					#------------------------
 					#The own Child Process has finished
 
+          $self->{'_report'} .= "cmd fnshd [" . $? ."].\n" if($self->{'_debug'});
+
 					#Read the Process Status Code
-					$self->{"_process_status"} = ( $? >> 8 );
+					$self->{'_process_status'} = ( $? >> 8 );
 
-					if ( $self->{"_process_status"} != 0 )
-					{
-						$self->{"_error_code"} = 1 if($self->{"_error_code"} < 1);
-					}
+          if($self->{'_profiling'})
+          {
+            $self->{'_end_time'} = gettimeofday;
 
-          $self->{"_pipe_readbytes"} = 0 if($self->{"_pipe_readbytes"} < 1);
+            $self->{'_execution_time'}
+              = sprintf("%.6f", $self->{'_end_time'} - $self->{'_start_time'});
+
+            $self->{'_report'} .= "Time Execution: '" . $self->{'_execution_time'} . "' s\n";
+          } #if($self->{"_profiling"})
+
+          if($self->{'_process_status'} >= 0)
+          {
+            $self->{'_report'} .= "cmd stt cd: '$? / " . $self->{'_process_status'} . " >> " . ( $? >> 8 ) . "'\n"
+              if($self->{'_debug'});
+
+            if($!)
+            {
+              #Read the Error Code
+              $self->{'_process_status'} = ($! + 0);
+
+              #Read the Error Message
+              $self->{'_error_message'} .= "Message [" . $self->{'_process_status'} . "]: '$!'\n";
+            } #if($!)
+
+            #Mark the Command as failed
+            $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
+
+          }
+          else  #A Negative Error Code was given
+          {
+            if($!)
+            {
+              #Read the Error Code
+              $self->{'_process_status'} = ($! + 0);
+
+              #Read the Error Message
+              $self->{'_error_message'} .= "Command '" . $self->{'_command'}
+                . "': Command failed with [" . $self->{'_process_status'} . "]!\n"
+                . "Message: '$!'\n";
+            }
+            else  #Error Code is not set
+            {
+              #Failure without Error Code or Message
+              $self->{'_error_message'} .= "Command '" . $self->{'_command'}
+                . "': Command failed with [" . $self->{'_process_status'} . "]!\n";
+
+             } #if($!)
+
+            #Mark the Command as failed
+            $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
+
+          } #if($self->{'_process_status'} >= 0)
+
+
+          $self->{'_pipe_readbytes'} = 0 if($self->{'_pipe_readbytes'} < 1);
 
 					#Read the Last Messages from the Sub Process
 					$self->Read;
@@ -782,14 +797,14 @@ sub Read
 	my $self = $_[0];
 
 
-	$self->{"_report"} .= "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"});
+	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" if($self->{"_debug"});
 
 	#The Sub Process must have been launched
-	if(defined $self->{"_pid"}
-		&& defined $self->{"_process_status"}
-		&& $self->{"_pid"} > 0)
+	if(defined $self->{'_pid'}
+		&& defined $self->{'_process_status'}
+		&& $self->{'_pid'} > 0)
 	{
-		my $ppsel = $self->{"_pipe_selector"};
+		my $ppsel = $self->{'_pipe_selector'};
 
 		my $prcpp  = $self->{"_log_pipe"};
 		my $prcerr = $self->{"_error_pipe"};
@@ -823,8 +838,6 @@ sub Read
       my $sppselfhln  = "";
       my $irdcnt = -1;
 
-      my $stmexecsrh = "Time Execution: '([^\\']+)'";
-
 
       $self->{"_report"} .= "prc (" . $self->{"_pid"} . ") [" . $self->{"_process_status"}
         . "]: try read ...\n"
@@ -849,11 +862,6 @@ sub Read
                   if($self->{"_debug"});
 
   							$self->{"_report"} .= $sppselfhln;
-
-  							if($self->{"_profiling"})
-  							{
-  							  $self->{"_execution_time"} = $1 if($sppselfhln =~ /$stmexecsrh/i);
-  							}
   						}
   						elsif(fileno($ppselfh) == fileno($prcerr))
   						{
@@ -1150,80 +1158,74 @@ sub getName {
 
 sub getNameComplete
 {
-  my $self = shift;
-  my $rsnm = "";
+  my $self = $_[0];
+  my $rsnm = '';
 
 
   #Identify the Process by its PID if it is running
-  $rsnm = "(" . $self->{"_pid"} . ")" if($self->{"_pid"} > -1);
-  $rsnm .= " " if($rsnm ne "");
+  $rsnm = '(' . $self->{'_pid'} . ')' if($self->{'_pid'} > -1);
+  $rsnm .= ' ' if($rsnm ne '');
   #Identify the Process by its given Name
-  $rsnm .= "'" . $self->{"_name"} . "'" if($self->{"_name"} ne "");
+  $rsnm .= "'" . $self->{'_name'} . "'" if($self->{'_name'} ne '');
 
   #Identify the Process by its Command
-  $rsnm .= "'" . $self->{"_command"} . "'" if($rsnm eq "");
+  $rsnm .= "'" . $self->{'_command'} . "'" if($rsnm eq '');
 
 
   return $rsnm;
 }
 
-sub getCommand {
-    my $self = shift;
-
-    return $self->{"_command"};
+sub getCommand
+{
+  return $_[0]->{'_command'};
 }
 
-sub getCheckInterval {
-    my $self = shift;
-
-    return $self->{"_check_interval"};
+sub getCheckInterval
+{
+  return $_[0]->{'_check_interval'};
 }
 
 sub getReadTimeout
 {
-  my $self = shift;
-
-  return $self->{"_read_timeout"};
+  return $_[0]->{'_read_timeout'};
 }
 
 sub getTimeout
 {
-  my $self = shift;
-
-  return $self->{"_execution_timeout"};
+  return $_[0]->{'_execution_timeout'};
 }
 
-sub isRunning {
-    my $self = shift;
-    my $irng = 0;
+sub isRunning
+{
+  my $self = $_[0];
+  my $irng = 0;
 
 
 	#The Process got a Process ID but did not get a Process Status Code yet
-	$irng = 1 if($self->{"_pid"} > 0
-		&& $self->{"_process_status"} < 0);
+	$irng = 1 if($self->{'_pid'} > 0 && $self->{'_process_status'} < 0);
 
 
-    return $irng;
+  return $irng;
 }
 
-sub getReportString 
+sub getReportString
 {
-  return \$_[0]->{"_report"};
+  return \$_[0]->{'_report'};
 }
 
-sub getErrorString 
+sub getErrorString
 {
-  return \$_[0]->{"_error_message"};
+  return \$_[0]->{'_error_message'};
 }
 
-sub getErrorCode 
+sub getErrorCode
 {
-  return $_[0]->{"_error_code"};
+  return $_[0]->{'_error_code'};
 }
 
 sub getProcessStatus
 {
-  return $_[0]->{"_process_status"};
+  return $_[0]->{'_process_status'};
 }
 
 sub getExecutionTime
@@ -1238,15 +1240,13 @@ sub isProfiling
 
 sub isDebug
 {
-  return $_[0]->{"_debug"};
+  return $_[0]->{'_debug'};
 }
 
 sub isQuiet
 {
-  return $_[0]->{"_quiet"};
+  return $_[0]->{'_quiet'};
 }
 
 
 return 1;
-
-
