@@ -40,8 +40,6 @@ isnt($iscriptstatus, undef, "EXIT CODE is returned");
 
 ok($iscriptstatus =~ qr/^-?\d$/, "EXIT CODE is numeric");
 
-is($iscriptstatus, $iteststatus, 'EXIT CODE is correct');
-
 print("EXIT CODE: '$iscriptstatus'\n");
 
 if(defined $rscriptlog)
