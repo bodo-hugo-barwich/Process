@@ -13,7 +13,7 @@ Having a similar implementation as the [`Capture::Tiny` Package](https://metacpa
 # Usage
 ## runSubProcess() Function
 Demonstrating the `runSubProcess()` Function Use Case:
-```
+```perl
 use Process::SubProcess qw(runSubProcess);
 
 use Test::More;
