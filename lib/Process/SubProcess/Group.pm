@@ -245,7 +245,7 @@ sub setCheckInterval
       foreach $sbprc (@{$self->{"_array_processes"}})
       {
         #Communicate the Change to all Sub Processes
-        $sbprc->setCheckInterval($isbprcchk);
+        $sbprc->setReadTimeout($isbprcchk);
 
       } #foreach $sbprc (@{$self->{"_array_processes"}})
     } #if(scalar(@{$self->{"_array_processes"}}) > 0)
