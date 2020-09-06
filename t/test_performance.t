@@ -43,7 +43,7 @@ my $spath = abs_path($0);
 $spath =~ s/^(.*\/)$smodule$/$1/;
 
 
-my $stestscript = "test_subprocess.pl";
+my $stestscript = "test_script.pl";
 my $itestpause = 3;
 my $iteststatus = 4;
 

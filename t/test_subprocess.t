@@ -42,8 +42,11 @@ my $spath = abs_path($0);
 ($smodule = $spath) =~ s/.*\/([^\/]+)$/$1/;
 $spath =~ s/^(.*\/)$smodule$/$1/;
 
+#Disable Warning Message Translation
+$ENV{'LANGUAGE'} = 'C';
 
-my $stestscript = "test_subprocess.pl";
+
+my $stestscript = "test_script.pl";
 my $itestpause = 3;
 my $iteststatus = 4;
 
