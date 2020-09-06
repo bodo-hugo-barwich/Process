@@ -33,11 +33,8 @@ my $iscriptstatus = -1;
 #Evaluate the Results
 
 isnt($rscriptlog, undef, "STDOUT Ref is returned");
-
 isnt($rscripterror, undef, "STDERR Ref is returned");
-
 isnt($iscriptstatus, undef, "EXIT CODE is returned");
-
 ok($iscriptstatus =~ qr/^-?\d$/, "EXIT CODE is numeric");
 
 print("EXIT CODE: '$iscriptstatus'\n");
