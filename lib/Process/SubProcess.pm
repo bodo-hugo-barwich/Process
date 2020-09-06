@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-03-21
+# @version 2020-05-24
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -329,14 +329,14 @@ sub setCheckInterval
   {
   	$self->{'_read_timeout'} = $self->{'_check_interval'} - 1
       if($self->{'_check_interval'} > 0
-        && $self->{'_check_interval'} < $self->{'_check_interval'});
+        && $self->{'_check_interval'} < $self->{'_read_timeout'});
 
     #Disable the Profiling Feature
     $self->{'_profiling'} = 0;
   }
   else #Set the Default Read Timeout
   {
-  	$self->{'_check_interval'} = 0;
+  	$self->{'_check_interval'} = -1;
   }
 }
 
@@ -930,13 +930,13 @@ sub Wait
 	my $itmrngend = -1;
 
 
-	print '' . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
 
 	if(scalar(keys %hshprms) > 0)
 	{
 		$self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-		$self->{"_execution_timeout"} = $hshprms{"timeout"} if(defined $hshprms{"timeout"});
+		$self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
 	}
 
 	do	#while($irng > 0);
