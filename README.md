@@ -7,7 +7,7 @@ seperate.
 This Module was conceived out of the need to launch multiple Tasks simulaneously while still keeping each Log and Error Messages and Exit Codes separately. \
 As I developed it as Prototype at:
 [Multi Process Manager](https://stackoverflow.com/questions/50177534/why-do-pipes-from-child-processes-break-sometimes-and-sometimes-not)\
-The Object Oriented Design permits the implementation of the [Command Pattern / Manager-Worker Pattern](https://en.wikipedia.org/wiki/Command_pattern) with the `Process::SubProcess::Group` and `Process::SubProcess::Pool` Packages.\
+The **Object Oriented Design** permits the implementation of the [Command Pattern / Manager-Worker Pattern](https://en.wikipedia.org/wiki/Command_pattern) with the `Process::SubProcess::Group` and `Process::SubProcess::Pool` Packages.\
 Having a similar implementation as the [`Capture::Tiny` Package](https://metacpan.org/pod/Capture::Tiny) it eventually evolved as a Procedural Replacement for the `Capture::Tiny::capture()` Function.
 
 # Usage
