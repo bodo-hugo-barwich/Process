@@ -3,13 +3,13 @@
 # @author Bodo (Hugo) Barwich
 # @version 2020-05-30
 # @package Test for the SubProcess Module
-# @subpackage run_test_subprocess.pl
+# @subpackage test_performance.t
 
-# This Module runs tests on the SubProcess Module
+# This Module runs tests on the Process::SubProcess Module
 #
 #---------------------------------
 # Requirements:
-# - The Perl Module "SubProcess" must be installed
+# - The Perl Module "Process::SubProcess" must be installed
 #
 
 
@@ -158,6 +158,78 @@ $rscripterror = $proctest->getErrorString;
 $iscriptstatus = $proctest->getProcessStatus;
 
 is($proctest->getExecutionTime, -1 , "Execution Time was not measured");
+
+print("Execution Time: '", $proctest->getExecutionTime, "'\n");
+
+print("EXIT CODE: '$iscriptstatus'\n");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+else
+{
+  isnt($$rscriptlog, undef, "STDOUT was captured");
+} #if(defined $rscriptlog)
+
+if(defined $rscripterror)
+{
+  print("STDERR: '$$rscripterror'\n");
+}
+else
+{
+  isnt($$rscripterror, undef, "STDERR was captured");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+
+#------------------------
+#Test: 'Execution Time = Read Timeout'
+
+$proctest = undef;
+
+$stestscript = 'quiet_script.pl';
+
+$itestpause = 3;
+
+$itm = -1;
+$itmstrt = -1;
+$itmend = -1;
+$itmexe = -1;
+
+
+print "Test: 'Execution Time = Read Timeout' do ...\n";
+
+$proctest = Process::SubProcess::->new(('command' => $spath . $stestscript . ' ' . $itestpause));
+
+$proctest->setReadTimeout(2);
+#Reenable Profiling
+$proctest->setProfiling;
+
+is($proctest->getReadTimeout, 2, 'Read Timeout activated');
+is($proctest->isProfiling, 1, 'Profiling enabled');
+
+$itmstrt = gettimeofday();
+
+print "script '$stestscript' Start - Time Now: '$itmstrt' s\n";
+
+is($proctest->Run, 1, "script '$stestscript': Execution correct");
+
+$itmend = gettimeofday();
+
+$itm = ($itmend - $itmstrt) * 1000;
+
+print "script '$stestscript' End - Time Now: '$itmend' s\n";
+
+print "script '$stestscript' run in '$itm' ms\n";
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+ok($proctest->getExecutionTime > $itestpause, "Measured Time is greater than the expected Time");
 
 print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 

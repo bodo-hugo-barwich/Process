@@ -160,7 +160,6 @@ sub new {
     , '_pipe_flags'  => undef
     , '_package_size' => 8192
     , '_read_timeout' => 0
-    , '_check_interval' => -1
     , '_execution_timeout' => -1
     , '_report' => ''
     , '_error_message' => ''
@@ -171,7 +170,6 @@ sub new {
     , '_execution_time' => -1
     , '_profiling' => 0
     , '_debug' => 0
-    , '_quiet' => 0
   };
 
   #Set initial Values
@@ -182,7 +180,7 @@ sub new {
   bless $self, $class;
 
   #Execute initial Configurations
-  $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+  $self->setReadTimeout($hshprms{'check'}) if(defined $hshprms{'check'});
   $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
   $self->setProfiling($hshprms{'profiling'}) if(defined $hshprms{'profiling'});
   $self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
@@ -230,7 +228,7 @@ sub setArrProcess
 	#Set the Name
 	$self->{"_name"} = $hshprms{"name"} if(defined $hshprms{"name"});
 
-	$self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
+	$self->setReadTimeout($hshprms{"check"}) if(defined $hshprms{"check"});
 	$self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
   $self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
   $self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
@@ -253,7 +251,7 @@ sub set
 	#Set the Name
 	$self->{"_name"} = $hshprms{"name"} if(defined $hshprms{"name"});
 
-	$self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
+	$self->setReadTimeout($hshprms{"check"}) if(defined $hshprms{"check"});
 	$self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
 	$self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
 	$self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
@@ -297,47 +295,6 @@ sub setCommand {
     $self->{'_pid'} = -1;
     $self->{'_process_status'} = -1;
 	}	#unless($self->isRunning)
-}
-
-sub setCheckInterval
-{
-	my $self = $_[0];
-
-
-  if(scalar(@_) > 1)
-  {
-    if($_[0] =~ /^\d+$/)
-    {
-      $self->{'_check_interval'} = $_[1];
-    }
-    else
-    {
-      $self->{'_check_interval'} = -1;
-    }
-  }
-  else #No Parameters given
-  {
-    #Remove the Check Interval
-    $self->{'_check_interval'} = -1;
-  }	#if(scalar(@_) > 0)
-
-  $self->{'_check_interval'} = -1 unless(defined $self->{'_check_interval'});
-
-  $self->{'_check_interval'} = -1 if($self->{'_check_interval'} < -1);
-
-  if($self->{'_check_interval'} > 0)
-  {
-  	$self->{'_read_timeout'} = $self->{'_check_interval'} - 1
-      if($self->{'_check_interval'} > 0
-        && $self->{'_check_interval'} < $self->{'_read_timeout'});
-
-    #Disable the Profiling Feature
-    $self->{'_profiling'} = 0;
-  }
-  else #Set the Default Read Timeout
-  {
-  	$self->{'_check_interval'} = -1;
-  }
 }
 
 sub setReadTimeout
@@ -451,34 +408,6 @@ sub setDebug
 	elsif($self->{"_debug"} < 0)
 	{
 		$self->{"_debug"} = 0;
-	}
-}
-
-sub setQuiet
-{
-	my $self = shift;
-
-
-	if(scalar(@_) > 0)
-	{
-    $self->{"_quiet"} = shift;
-
-    $self->{"_quiet"} = 0 unless($self->{"_quiet"} =~ /^-?\d+$/);
-	}
-	else	#No Parameter was given
-	{
-		$self->{"_quiet"} = 1;
-	}	#if(scalar(@_) > 0)
-
-  $self->{"_quiet"} = 1 unless(defined $self->{"_quiet"});
-
-	if($self->{"_quiet"} > 1)
-	{
-		$self->{"_quiet"} = 1;
-	}
-	elsif($self->{"_quiet"} < 0)
-	{
-		$self->{"_quiet"} = 0;
 	}
 }
 
@@ -632,10 +561,11 @@ sub Check
 	my $irng = 0;
 
 
-  $self->{'_report'} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
-    if($self->{'_debug'});
-
-	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
+  if($self->{'_debug'})
+  {
+    $self->{'_report'} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n";
+  	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" ;
+  } #if($self->{'_debug'})
 
 	if(defined $self->{'_pid'}
 		&& $self->{'_pid'} > -1)
@@ -922,9 +852,6 @@ sub Wait
 
   my $sprcnm = $self->getNameComplete;
 
-	my $itmchk = -1;
-	my $itmchkstrt = -1;
-	my $itmchkend = -1;
 	my $itmrng = -1;
 	my $itmrngstrt = -1;
 	my $itmrngend = -1;
@@ -935,71 +862,47 @@ sub Wait
 
 	if(scalar(keys %hshprms) > 0)
 	{
-		$self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-		$self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
+		$self->setReadTimeout($hshprms{'check'}) if(defined $hshprms{'check'});
+		$self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
 	}
 
 	do	#while($irng > 0);
 	{
-		if($self->{"_check_interval"} > -1
-			|| $self->{"_execution_timeout"} > -1)
+		if($self->{'_execution_timeout'} > -1)
 		{
-			$itmchkstrt = time;
-
-			if($self->{"_execution_timeout"} > -1)
+			if($itmrngstrt < 1)
 			{
-				if($itmrngstrt < 1)
-				{
-					$itmrng = 0;
-					$itmrngstrt = $itmchkstrt;
-				}
-			}	#if($self->{"_execution_timeout"} > -1)
-		}	#if($self->{"_check_interval"} > -1 || $self->{"_execution_timeout"} > -1)
+				$itmrng = 0;
+				$itmrngstrt = time;
+			}
+		}	#if($self->{"_execution_timeout"} > -1)
 
 		#Check the Sub Process
 		$irng = $self->Check;
 
 		if($irng > 0)
 		{
-			if($self->{"_check_interval"} > -1
-				|| $self->{"_execution_timeout"} > -1)
+			if($self->{'_execution_timeout'} > -1)
 			{
-				$itmchkend = time;
-				$itmrngend = $itmchkend;
+				$itmrngend = time;
 
-				$itmchk = $itmchkend - $itmchkstrt;
 				$itmrng = $itmrngend - $itmrngstrt;
 
-				if($self->{"_debug"} > 0
-					&& $self->{"_quiet"} < 1)
-				{
-					print "wait tm chk: '$itmchk'\n";
-					print "wait tm rng: '$itmrng'\n";
-				}
+				$self->{'_report'} .= "wait tm rng: '$itmrng'\n" if($self->{'_debug'});
 
-				if($self->{"_execution_timeout"} > -1
-					&& $itmrng >= $self->{"_execution_timeout"})
+				if($itmrng >= $self->{'_execution_timeout'})
 				{
-					$self->{"_error_message"} .= "Sub Process ${sprcnm}: Execution timed out!\n"
-						. "Execution Time '$itmrng / " . $self->{"_execution_timeout"} . "'\n"
+					$self->{'_error_message'} .= "Sub Process ${sprcnm}: Execution timed out!\n"
+						. "Execution Time '$itmrng / " . $self->{'_execution_timeout'} . "'\n"
 						. "Process will be terminated.\n";
 
-					$self->{"_error_code"} = 4 if($self->{"_error_code"} < 4);
+					$self->{'_error_code'} = 4 if($self->{'_error_code'} < 4);
 
+          #Terminate the Timed Out Sub Process
 					$self->Terminate;
 					$irng = -1;
-				}	#if($self->{"_execution_timeout"} > -1 && $itmrng >= $self->{"_execution_timeout"})
-
-				if($irng > 0
-					&& $itmchk < $self->{"_check_interval"})
-				{
-					print "wait sleep '" . ($self->{"_check_interval"} - $itmchk) . "' s ...\n"
-						if($self->{"_debug"} > 0
-							&& $self->{"_quiet"} < 1);
-
-					sleep ($self->{"_check_interval"} - $itmchk);
-				}
-			}	#if($self->{"_check_interval"} > -1 || $self->{"_execution_timeout"} > -1)
+				}	#if($itmrng >= $self->{"_execution_timeout"})
+			}	#if($self->{"_execution_timeout"} > -1)
 		}	#if($irng > 0)
 	}
 	while($irng > 0);
@@ -1027,15 +930,15 @@ sub Run
 	my $irs = 0;
 
 
-	print '' . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
 	my $sprcnm = $self->getNameComplete;
 
 
 	if(scalar(keys %hshprms) > 0)
 	{
-		$self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-		$self->{"_execution_timeout"} = $hshprms{"timeout"} if(defined $hshprms{"timeout"});
+		$self->setReadTimeout($hshprms{'check'}) if(defined $hshprms{'check'});
+    $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
 	}
 
 	if($self->Launch)
@@ -1044,7 +947,7 @@ sub Run
 	}
 	else	#Sub Process Launch failed
 	{
-		$self->{"_error_message"} .= "Sub Process ${sprcnm}: Process Launch failed!\n";
+		$self->{'_error_message'} .= "Sub Process ${sprcnm}: Process Launch failed!\n";
 	}	#if($self->Launch)
 
 
@@ -1053,24 +956,24 @@ sub Run
 
 sub Terminate
 {
-	my $self = shift;
+	my $self = $_[0];
 	my $sprcnm = $self->getNameComplete;
 
 
-  $self->{"_error_message"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
-    if($self->{"_debug"});
+  $self->{'_report'} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
+    if($self->{'_debug'});
 
 	if($self->isRunning)
 	{
-		$self->{"_error_message"} .= "Sub Process ${sprcnm}: Process terminating ...\n";
+		$self->{'_error_message'} .= "Sub Process ${sprcnm}: Process terminating ...\n";
 
-		kill('TERM', $self->{"_pid"});
+		kill('TERM', $self->{'_pid'});
 
 		$self->Check;
 	}
 	else	#Sub Process is not running
 	{
-		$self->{"_error_message"} .= "Sub Process ${sprcnm}: Process is not running.\n";
+		$self->{'_error_message'} .= "Sub Process ${sprcnm}: Process is not running.\n";
 	}	#if($self->isRunning)
 }
 
@@ -1177,11 +1080,6 @@ sub getCommand
   return $_[0]->{'_command'};
 }
 
-sub getCheckInterval
-{
-  return $_[0]->{'_check_interval'};
-}
-
 sub getReadTimeout
 {
   return $_[0]->{'_read_timeout'};
@@ -1238,11 +1136,6 @@ sub isProfiling
 sub isDebug
 {
   return $_[0]->{'_debug'};
-}
-
-sub isQuiet
-{
-  return $_[0]->{'_quiet'};
 }
 
 

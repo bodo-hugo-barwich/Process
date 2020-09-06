@@ -96,6 +96,86 @@ print "\n";
 
 
 #------------------------
+#Test: 'Read Timeout'
+
+print "Test: 'Read Timeout' do ...\n";
+
+$proctest = Process::SubProcess::->new(('command' => "${spath}${stestscript} $itestpause"
+  , 'check' => 2, 'profiling' => 1));
+
+isnt($proctest->getReadTimeout, -1, "Read Timeout is set");
+is($proctest->isProfiling, 1, 'Profiling enabled');
+
+is($proctest->Launch, 1, "script '$stestscript': Launch succeed");
+is($proctest->Wait, 1, "script '$stestscript': Execution finished correctly");
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+ok($proctest->getExecutionTime < $proctest->getReadTimeout * 2, "Measured Time is smaller than the Read Timeout");
+
+print("Execution Time: '", $proctest->getExecutionTime, "'\n");
+
+print("EXIT CODE: '$iscriptstatus'\n");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+else
+{
+  isnt($$rscriptlog, undef, "STDOUT was captured");
+} #if(defined $rscriptlog)
+
+if(defined $rscripterror)
+{
+  print("STDERR: '$$rscripterror'\n");
+}
+else
+{
+  isnt($$rscripterror, undef, "STDERR was captured");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+#------------------------
+#Test: 'Execution Timeout'
+
+print "Test: 'Execution Timeout' do ...\n";
+
+$itestpause = 4;
+
+$proctest = Process::SubProcess::->new(('command' => "${spath}${stestscript} $itestpause"
+  , 'timeout' => ($itestpause - 2)));
+
+isnt($proctest->getTimeout, -1, "Execution Timeout is set");
+
+is($proctest->Launch, 1, "script '$stestscript': Launch succeed");
+is($proctest->Wait, 0, "script '$stestscript': Execution failed as expected");
+
+$rscriptlog = $proctest->getReportString;
+$rscripterror = $proctest->getErrorString;
+$iscriptstatus = $proctest->getProcessStatus;
+
+is($proctest->getErrorCode, 4, "ERROR CODE '4' is correct");
+
+is($iscriptstatus, -1, "EXIT CODE was not returned");
+
+isnt($rscripterror, undef, "STDERR Ref is returned");
+
+if(defined $rscripterror)
+{
+  ok($$rscripterror =~ qr/Execution timed out/i, "STDERR has Execution Timeout");
+
+  print("STDERR: '$$rscripterror'\n");
+} #if(defined $rscripterror)
+
+print "\n";
+
+
+#------------------------
 #Test: 'Script not found'
 
 print "Test: 'Script not found' do ...\n";
