@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-03-21
+# @version 2020-09-06
 # @package SubProcess Management
-# @subpackage SubProcess/Group.pm
+# @subpackage Process/SubProcess/Group.pm
 
 # This Module defines a Class to manage multiple SubProcess Objects read their Output and Errors
 #
@@ -77,7 +77,6 @@ sub new {
     };
 
     #Set initial Values
-    $self->{"_execution_timeout"} = $hshprms{"timeout"} if(defined $hshprms{"timeout"});
     $self->{"_debug"} = $hshprms{"debug"} if(defined $hshprms{"debug"});
     $self->{"_quiet"} = $hshprms{"quiet"} if(defined $hshprms{"quiet"});
 
@@ -86,6 +85,7 @@ sub new {
 
     #Execute initial Configurations
     $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
+    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
 
 
     #Give the Object back
@@ -189,10 +189,6 @@ sub add
 		{
 			push @{$self->{_array_processes}}, ($rsprc);
 
-      $rsprc->setCheckInterval($self->{"_check_interval"})
-        if(defined $self->{"_check_interval"}
-          && $self->{"_check_interval"} > 0);
-
       $rsprc->setReadTimeout($self->{"_read_timeout"})
         if(defined $self->{"_read_timeout"}
           && $self->{"_read_timeout"} > 0);
@@ -241,6 +237,9 @@ sub setCheckInterval
       my $sbprc = undef;
       my $isbprcchk = sprintf("%d", $self->{"_check_interval"} / scalar(@{$self->{"_array_processes"}}));
 
+
+      #Save the required Read Timeout
+      $self->setReadTimeout($isbprcchk);
 
       foreach $sbprc (@{$self->{"_array_processes"}})
       {

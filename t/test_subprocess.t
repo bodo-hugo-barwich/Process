@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-05-30
-# @package Test for the SubProcess Module
-# @subpackage run_test_subprocess.pl
+# @version 2020-09-06
+# @package Test for the Process::SubProcess Module
+# @subpackage test_subprocess.t
 
-# This Module runs tests on the SubProcess Module
+# This Module runs tests on the Process::SubProcess Module
 #
 #---------------------------------
 # Requirements:
-# - The Perl Module "SubProcess" must be installed
+# - The Perl Module "Process::SubProcess" must be installed
 #
 
 
@@ -18,8 +18,6 @@ use warnings;
 use strict;
 
 use Cwd qw(abs_path);
-
-use Time::HiRes qw(gettimeofday);
 
 use Test::More;
 

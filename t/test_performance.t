@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-05-30
-# @package Test for the SubProcess Module
+# @version 2020-09-06
+# @package Test for the Process::SubProcess Module
 # @subpackage test_performance.t
 
 # This Module runs tests on the Process::SubProcess Module
@@ -136,8 +136,7 @@ $proctest = Process::SubProcess::->new(('command' => $spath . $stestscript . ' '
 $proctest->setReadTimeout(2);
 
 is($proctest->getReadTimeout, 2, 'Read Timeout activated');
-
-is($proctest->isProfiling, 0, 'Profiling deactivated');
+is($proctest->isProfiling, 1, 'Profiling enabled');
 
 $itmstrt = gettimeofday();
 
@@ -157,7 +156,7 @@ $rscriptlog = $proctest->getReportString;
 $rscripterror = $proctest->getErrorString;
 $iscriptstatus = $proctest->getProcessStatus;
 
-is($proctest->getExecutionTime, -1 , "Execution Time was not measured");
+isnt($proctest->getExecutionTime, -1 , "Execution Time was measured");
 
 print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
@@ -215,7 +214,7 @@ $itmstrt = gettimeofday();
 
 print "script '$stestscript' Start - Time Now: '$itmstrt' s\n";
 
-is($proctest->Run, 1, "script '$stestscript': Execution correct");
+is($proctest->Run, 1, "script '$stestscript': Execution finished correctly");
 
 $itmend = gettimeofday();
 
