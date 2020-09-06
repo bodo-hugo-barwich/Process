@@ -21,16 +21,16 @@ use Test::More;
 
 my $stestscript = "test_script.pl";
 my $spath = '/path/to/test/script/';
-my $itestpause = 3;
-my $iteststatus = 4;
 
 my $rscriptlog = undef;
 my $rscripterror = undef;
 my $iscriptstatus = -1;
 
 
-($rscriptlog, $rscripterror, $iscriptstatus)
-  = runSubProcess("${spath}${stestscript} $itestpause $iteststatus");
+#Execute the Command
+($rscriptlog, $rscripterror, $iscriptstatus) = runSubProcess($spath . $stestscript);
+
+#Evaluate the Results
 
 isnt($rscriptlog, undef, "STDOUT Ref is returned");
 
