@@ -584,50 +584,39 @@ sub Wait
   my $itmrngend = -1;
 
 
-  print "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+  $self->{'_report'} .= "" . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
   if(scalar(keys %hshprms) > 0)
   {
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
+    $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
     $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
   }
 
   do  #while($irng > 0);
   {
-    if($self->{"_check_interval"} > -1
-      || $self->{"_execution_timeout"} > -1)
+    if($self->{"_execution_timeout"} > -1)
     {
-      $itmchkstrt = time;
-
-      if($self->{"_execution_timeout"} > -1)
+      if($itmrngstrt < 1)
       {
-        if($itmrngstrt < 1)
-        {
-          $itmrng = 0;
-          $itmrngstrt = $itmchkstrt;
-        }
-      } #if($self->{"_execution_timeout"} > -1)
-    } #if($self->{"_check_interval"} > -1 || $self->{"_execution_timeout"} > -1)
+        $itmrng = 0;
+        $itmrngstrt = time;
+      }
+    } #if($self->{"_execution_timeout"} > -1)
 
     #Check the Sub Process
     $irng = $self->Check;
 
     if($irng > 0)
     {
-      if($self->{"_check_interval"} > -1
-        || $self->{"_execution_timeout"} > -1)
+      if($self->{"_execution_timeout"} > -1)
       {
-        $itmchkend = time;
-        $itmrngend = $itmchkend;
+        $itmrngend = time;
 
-        $itmchk = $itmchkend - $itmchkstrt;
         $itmrng = $itmrngend - $itmrngstrt;
 
-        if($self->{"_debug"} > 0
-          && $self->{"_quiet"} < 1)
+        if($self->{'_debug'})
         {
-          print "wait tm chk: '$itmchk'\n";
-          print "wait tm rng: '$itmrng'\n";
+          $self->{'_report'} .= "wait tm rng: '$itmrng'\n";
         }
 
         if($self->{"_execution_timeout"} > -1
@@ -639,20 +628,11 @@ sub Wait
 
           $self->{"_error_code"} = 4 if($self->{"_error_code"} < 4);
 
+          #Terminate the Sub Processes
           $self->Terminate;
           $irng = -1;
         } #if($self->{"_execution_timeout"} > -1 && $itmrng >= $self->{"_execution_timeout"})
-
-        if($irng > 0
-          && $itmchk < $self->{"_check_interval"})
-        {
-          print "wait sleep '" . ($self->{"_check_interval"} - $itmchk) . "' s ...\n"
-            if($self->{"_debug"} > 0
-              && $self->{"_quiet"} < 1);
-
-          sleep ($self->{"_check_interval"} - $itmchk);
-        }
-      } #if($self->{"_check_interval"} > -1 || $self->{"_execution_timeout"} > -1)
+      } #if($self->{"_execution_timeout"} > -1)
     } #if($irng > 0)
   }
   while($irng > 0);
@@ -680,21 +660,21 @@ sub Run
   my $irs = 0;
 
 
-  print "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+  $self->{'_report'} .= "" . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
   if(scalar(keys %hshprms) > 0)
   {
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
+    $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+    $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
   }
 
   if($self->Launch)
   {
-    $irs = $self->Wait();
+    $irs = $self->Wait;
   }
   else  #Sub Process Launch failed
   {
-    $self->{"_error_message"} .= "Sub Processes: Process Launch failed!\n";
+    $self->{'_error_message'} .= "Sub Processes: Process Launch failed!\n";
   } #if($self->Launch)
 
 
