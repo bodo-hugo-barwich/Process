@@ -146,7 +146,6 @@ print "\n";
 #------------------------
 #Test: 'Process::SubProcess::Group Execution Time'
 
-
 print "Test: 'Process::SubProcess::Group Execution Time' do ...\n";
 
 $procgroup = Process::SubProcess::Group::->new(('check' => 2));
@@ -247,7 +246,6 @@ print "\n";
 #------------------------
 #Test: 'Process::SubProcess::Group Execution Time Quiet'
 
-
 print "Test: 'Process::SubProcess::Group Execution Time Quiet' do ...\n";
 
 $procgroup = Process::SubProcess::Group::->new(('check' => 2));
@@ -286,6 +284,10 @@ $procgroup->add($proctest);
 $iprccnt = $procgroup->getProcessCount;
 
 is($iprccnt, 3, "scripts (count: '$iprccnt'): added correctly");
+
+$procgroup->setCheckInterval(2);
+
+isnt($procgroup->getCheckInterval, -1, "Read Timeout activated");
 
 
 $itmstrt = gettimeofday();
@@ -346,5 +348,117 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 print "\n";
 
 
-done_testing();
+#------------------------
+#Test: 'Process::SubProcess::Group Execution Timeout'
 
+print "Test: 'Process::SubProcess::Group Execution Timeout' do ...\n";
+
+$procgroup = Process::SubProcess::Group::->new(('check' => 2, 'timeout' => 9));
+
+$stestscript = "test_script.pl";
+$itestpause = 3;
+
+$proctest = Process::SubProcess::->new(('name' => 'test-script:3s'
+  , 'command' => $spath . $stestscript . ' ' . $itestpause
+  , 'profiling' => 1));
+
+is($proctest->isProfiling, 1, 'Profiling activated');
+
+$procgroup->add($proctest);
+
+$itestpause = 5;
+
+$proctest = Process::SubProcess::->new(('name' => 'test-script:5s'
+  , 'command' => $spath . $stestscript . ' ' . $itestpause
+  , 'profiling' => 1));
+
+is($proctest->isProfiling, 1, 'Profiling activated');
+
+$procgroup->add($proctest);
+
+$itestpause = 10;
+
+$proctest = Process::SubProcess::->new(('name' => 'test-script:10s'
+  , 'command' => $spath . $stestscript . ' ' . $itestpause
+  , 'profiling' => 1));
+
+is($proctest->isProfiling, 1, 'Profiling activated');
+
+$procgroup->add($proctest);
+
+$iprccnt = $procgroup->getProcessCount;
+
+is($iprccnt, 3, "scripts (count: '$iprccnt'): added correctly");
+
+$procgroup->setCheckInterval(2);
+
+isnt($procgroup->getCheckInterval, -1, "Read Timeout activated");
+isnt($procgroup->getTimeout, -1, "Execution Timeout activated");
+
+
+$itmstrt = gettimeofday();
+
+print "Process Group Execution Start - Time Now: '$itmstrt' s\n";
+
+is($procgroup->Run, 0, "Process Group Execution: Execution failed as expected");
+
+$itmend = gettimeofday();
+
+$itm = ($itmend - $itmstrt) * 1000;
+
+print "Process Group Execution End - Time Now: '$itmend' s\n";
+
+print "Process Group Execution finished in '$itm' ms\n";
+
+print("Process Group ERROR CODE: '" .  $procgroup->getErrorCode .  "'\n");
+
+is($procgroup->getErrorCode, 4, "Process Group Execution: ERROR CODE is correct");
+
+print("Process Group STDOUT: '" . ${$procgroup->getReportString} . "'\n");
+print("Process Group STDERR: '" . ${$procgroup->getErrorString} . "'\n");
+
+
+for($iprc = 0; $iprc < $iprccnt; $iprc++)
+{
+  $proctest = $procgroup->getiProcess($iprc);
+
+  isnt($proctest, undef, "Process No. '$iprc': Listed correctly");
+
+  if(defined $proctest)
+  {
+    print("Process ", $proctest->getNameComplete, ":\n");
+
+    $rscriptlog = $proctest->getReportString;
+    $rscripterror = $proctest->getErrorString;
+    $iscriptstatus = $proctest->getProcessStatus;
+
+    isnt($proctest->getExecutionTime, -1 , "Execution Time was measured");
+
+    print("Execution Time: '", $proctest->getExecutionTime, "'\n");
+
+    print("EXIT CODE: '$iscriptstatus'\n");
+
+    if(defined $rscriptlog)
+    {
+      print("STDOUT: '$$rscriptlog'\n");
+    }
+    else
+    {
+      isnt($$rscriptlog, undef, "STDOUT was captured");
+    } #if(defined $rscriptlog)
+
+    if(defined $rscripterror)
+    {
+      print("STDERR: '$$rscripterror'\n");
+    }
+    else
+    {
+      isnt($$rscripterror, undef, "STDERR was captured");
+    } #if(defined $rscripterror)
+  } #if(defined $proctest)
+} #for($iprc = 0; $iprc < $iprccnt; $iprc++)
+
+print "\n";
+
+
+done_testing();

@@ -594,7 +594,7 @@ sub Wait
 
   do  #while($irng > 0);
   {
-    if($self->{"_execution_timeout"} > -1)
+    if($self->{'_execution_timeout'} > -1)
     {
       if($itmrngstrt < 1)
       {
@@ -608,7 +608,7 @@ sub Wait
 
     if($irng > 0)
     {
-      if($self->{"_execution_timeout"} > -1)
+      if($self->{'_execution_timeout'} > -1)
       {
         $itmrngend = time;
 
@@ -806,10 +806,14 @@ sub getiProcess
 	return $rsprc;
 }
 
-sub getCheckInterval {
-    my $self = $_[0];
+sub getCheckInterval
+{
+  return $_[0]->{'_check_interval'};
+}
 
-    return $self->{"_check_interval"};
+sub getTimeout
+{
+  return $_[0]->{'_execution_timeout'};
 }
 
 sub getProcessCount {

@@ -322,7 +322,7 @@ sub setReadTimeout
   if($self->{'_read_timeout'} > 0)
   {
     #Disable the Profiling Feature
-    $self->{'_profiling'} = 0;
+    #$self->{'_profiling'} = 0;
   }
   else
   {
@@ -622,7 +622,9 @@ sub Check
             $self->{'_execution_time'}
               = sprintf("%.6f", $self->{'_end_time'} - $self->{'_start_time'});
 
-            $self->{'_report'} .= "Time Execution: '" . $self->{'_execution_time'} . "' s\n";
+            $self->{'_report'} .= "Time Execution: '" . $self->{'_execution_time'} . "' s\n"
+              if($self->{'_debug'});
+
           } #if($self->{"_profiling"})
 
           if($self->{'_process_status'} >= 0)
