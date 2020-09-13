@@ -52,44 +52,43 @@ use Process::SubProcess;
 #Constructors
 
 
-sub new {
-    my $invocant = shift;
-    my $class    = ref($invocant) || $invocant;
-    my $self     = undef;
-
-    #Take the Method Parameters
-    my %hshprms = @_;
-
-
-    #Set the Default Attributes and assign the initial Values
-    $self = {
-        "_array_processes" => [],
-        "_list_processes"  => {},
-        "_check_interval" => -1,
-        "_read_timeout" => -1,
-        "_execution_timeout" => -1,
-        "_report"          => "",
-        "_error_message"   => "",
-        "_error_code"      => 0,
-        "_profiling" => 0,
-        "_debug" => 0,
-        "_quiet" => 0
-    };
-
-    #Set initial Values
-    $self->{"_debug"} = $hshprms{"debug"} if(defined $hshprms{"debug"});
-    $self->{"_quiet"} = $hshprms{"quiet"} if(defined $hshprms{"quiet"});
-
-    #Bestow Objecthood
-    bless $self, $class;
-
-    #Execute initial Configurations
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
+sub new
+{
+  #Take the Method Parameters
+  my ($invocant, %hshprms) =  @_;
+  my $class    = ref($invocant) || $invocant;
+  my $self     = undef;
 
 
-    #Give the Object back
-    return $self;
+  #Set the Default Attributes and assign the initial Values
+  $self = {
+      "_array_processes" => [],
+      "_list_processes"  => {},
+      "_check_interval" => -1,
+      "_read_timeout" => -1,
+      "_execution_timeout" => -1,
+      "_report"          => "",
+      "_error_message"   => "",
+      "_error_code"      => 0,
+      "_profiling" => 0,
+      "_debug" => 0,
+      "_quiet" => 0
+  };
+
+  #Set initial Values
+  $self->{"_debug"} = $hshprms{"debug"} if(defined $hshprms{"debug"});
+  $self->{"_quiet"} = $hshprms{"quiet"} if(defined $hshprms{"quiet"});
+
+  #Bestow Objecthood
+  bless $self, $class;
+
+  #Execute initial Configurations
+  $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
+  $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
+
+
+  #Give the Object back
+  return $self;
 }
 
 sub DESTROY {
@@ -230,25 +229,15 @@ sub setCheckInterval
 
   $self->{"_check_interval"} = -1 unless(defined $self->{"_check_interval"});
 
-  if(defined $self->{"_array_processes"})
+  if($self->{"_check_interval"} > 0
+    && scalar(@{$self->{"_array_processes"}}) > 0)
   {
-    if(scalar(@{$self->{"_array_processes"}}) > 0)
-    {
-      my $sbprc = undef;
-      my $isbprcchk = sprintf("%d", $self->{"_check_interval"} / scalar(@{$self->{"_array_processes"}}));
+    my $irdtmout = sprintf("%d", $self->{"_check_interval"} / scalar(@{$self->{"_array_processes"}}));
 
 
-      #Save the required Read Timeout
-      $self->setReadTimeout($isbprcchk);
-
-      foreach $sbprc (@{$self->{"_array_processes"}})
-      {
-        #Communicate the Change to all Sub Processes
-        $sbprc->setReadTimeout($isbprcchk);
-
-      } #foreach $sbprc (@{$self->{"_array_processes"}})
-    } #if(scalar(@{$self->{"_array_processes"}}) > 0)
-  } #if(defined $self->{"_array_processes"})
+    #Save the required Read Timeout
+    $self->setReadTimeout($irdtmout);
+  } #if($self->{"_check_interval"} > 0 && scalar(@{$self->{"_array_processes"}}) > 0)
 }
 
 sub setReadTimeout
@@ -811,15 +800,19 @@ sub getCheckInterval
   return $_[0]->{'_check_interval'};
 }
 
+sub getReadTimeout
+{
+  return $_[0]->{'_read_timeout'};
+}
+
 sub getTimeout
 {
   return $_[0]->{'_execution_timeout'};
 }
 
-sub getProcessCount {
-    my $self = $_[0];
-
-    return scalar(@{$self->{"_array_processes"}});
+sub getProcessCount
+{
+  return scalar(@{ $_[0]->{"_array_processes"}});
 }
 
 sub getRunningCount

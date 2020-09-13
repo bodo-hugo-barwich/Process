@@ -158,6 +158,7 @@ $iscriptstatus = $proctest->getProcessStatus;
 
 isnt($proctest->getExecutionTime, -1 , "Execution Time was measured");
 
+print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
 print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
 print("EXIT CODE: '$iscriptstatus'\n");
@@ -230,6 +231,7 @@ $iscriptstatus = $proctest->getProcessStatus;
 
 ok($proctest->getExecutionTime > $itestpause, "Measured Time is greater than the expected Time");
 
+print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
 print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
 print("EXIT CODE: '$iscriptstatus'\n");

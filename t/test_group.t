@@ -144,9 +144,9 @@ print "\n";
 
 
 #------------------------
-#Test: 'Process::SubProcess::Group Execution Time'
+#Test: 'Process::SubProcess::Group Profiling'
 
-print "Test: 'Process::SubProcess::Group Execution Time' do ...\n";
+print "Test: 'Process::SubProcess::Group Profiling' do ...\n";
 
 $procgroup = Process::SubProcess::Group::->new(('check' => 2));
 
@@ -216,6 +216,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
     isnt($proctest->getExecutionTime, -1 , "Execution Time was measured");
 
+    print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
     print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
     print("EXIT CODE: '$iscriptstatus'\n");
@@ -244,9 +245,9 @@ print "\n";
 
 
 #------------------------
-#Test: 'Process::SubProcess::Group Execution Time Quiet'
+#Test: 'Process::SubProcess::Group Profiling Quiet'
 
-print "Test: 'Process::SubProcess::Group Execution Time Quiet' do ...\n";
+print "Test: 'Process::SubProcess::Group Profiling Quiet' do ...\n";
 
 $procgroup = Process::SubProcess::Group::->new(('check' => 2));
 
@@ -285,7 +286,7 @@ $iprccnt = $procgroup->getProcessCount;
 
 is($iprccnt, 3, "scripts (count: '$iprccnt'): added correctly");
 
-$procgroup->setCheckInterval(2);
+$procgroup->setCheckInterval(6);
 
 isnt($procgroup->getCheckInterval, -1, "Read Timeout activated");
 
@@ -321,6 +322,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
     isnt($proctest->getExecutionTime, -1 , "Execution Time was measured");
 
+    print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
     print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
     print("EXIT CODE: '$iscriptstatus'\n");
@@ -353,7 +355,7 @@ print "\n";
 
 print "Test: 'Process::SubProcess::Group Execution Timeout' do ...\n";
 
-$procgroup = Process::SubProcess::Group::->new(('check' => 2, 'timeout' => 9));
+$procgroup = Process::SubProcess::Group::->new(('timeout' => 9));
 
 $stestscript = "test_script.pl";
 $itestpause = 3;
@@ -376,9 +378,9 @@ is($proctest->isProfiling, 1, 'Profiling activated');
 
 $procgroup->add($proctest);
 
-$itestpause = 10;
+$itestpause = 11;
 
-$proctest = Process::SubProcess::->new(('name' => 'test-script:10s'
+$proctest = Process::SubProcess::->new(('name' => 'test-script:11s'
   , 'command' => $spath . $stestscript . ' ' . $itestpause
   , 'profiling' => 1));
 
@@ -390,7 +392,7 @@ $iprccnt = $procgroup->getProcessCount;
 
 is($iprccnt, 3, "scripts (count: '$iprccnt'): added correctly");
 
-$procgroup->setCheckInterval(2);
+$procgroup->setCheckInterval(6);
 
 isnt($procgroup->getCheckInterval, -1, "Read Timeout activated");
 isnt($procgroup->getTimeout, -1, "Execution Timeout activated");
@@ -434,6 +436,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
     isnt($proctest->getExecutionTime, -1 , "Execution Time was measured");
 
+    print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
     print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
     print("EXIT CODE: '$iscriptstatus'\n");
