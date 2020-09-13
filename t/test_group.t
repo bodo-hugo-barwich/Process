@@ -314,7 +314,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
   if(defined $proctest)
   {
-    print("Process ", $proctest->getNameComplete, ":\n");
+    print("Process ", $proctest->getNameComplete, " finished with [" . $proctest->getErrorCode . "]:\n");
 
     $rscriptlog = $proctest->getReportString;
     $rscripterror = $proctest->getErrorString;
@@ -325,6 +325,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
     print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
+    print("ERROR CODE: '", $proctest->getErrorCode, "'\n");
     print("EXIT CODE: '$iscriptstatus'\n");
 
     if(defined $rscriptlog)
@@ -428,7 +429,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
   if(defined $proctest)
   {
-    print("Process ", $proctest->getNameComplete, ":\n");
+    print("Process ", $proctest->getNameComplete, " finished with [" . $proctest->getErrorCode . "]:\n");
 
     $rscriptlog = $proctest->getReportString;
     $rscripterror = $proctest->getErrorString;
@@ -439,6 +440,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     print("Read Timeout: '", $proctest->getReadTimeout, "'\n");
     print("Execution Time: '", $proctest->getExecutionTime, "'\n");
 
+    print("ERROR CODE: '", $proctest->getErrorCode, "'\n");
     print("EXIT CODE: '$iscriptstatus'\n");
 
     if(defined $rscriptlog)
