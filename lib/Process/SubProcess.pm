@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-06
+# @version 2020-09-15
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -181,10 +181,11 @@ sub new {
 
   #Execute initial Configurations
   $self->setReadTimeout($hshprms{'check'}) if(defined $hshprms{'check'});
+  $self->setReadTimeout($hshprms{'read'}) if(defined $hshprms{'read'});
+  $self->setReadTimeout($hshprms{'readtimeout'}) if(defined $hshprms{'readtimeout'});
   $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
   $self->setProfiling($hshprms{'profiling'}) if(defined $hshprms{'profiling'});
-  $self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
-  $self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
+  $self->setDebug($hshprms{'debug'}) if(defined $hshprms{'debug'});
 
 
   #Give the Object back
@@ -220,51 +221,35 @@ C<CONFIGURATIONS> is a list are passed in a hash like fashion, using key and val
 
 sub setArrProcess
 {
-	my $self = shift;
-	#Take the Method Parameters
-	my %hshprms = @_;
+  #Take the Method Parameters
+	my ($self, %hshprms) = @_;
 
 
 	#Set the Name
-	$self->{"_name"} = $hshprms{"name"} if(defined $hshprms{"name"});
+	$self->{'_name'} = $hshprms{'name'} if(defined $hshprms{'name'});
 
-	$self->setReadTimeout($hshprms{"check"}) if(defined $hshprms{"check"});
-	$self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
-  $self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
-  $self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
+	$self->setReadTimeout($hshprms{'check'}) if(defined $hshprms{'check'});
+  $self->setReadTimeout($hshprms{'read'}) if(defined $hshprms{'read'});
+  $self->setReadTimeout($hshprms{'readtimeout'}) if(defined $hshprms{'readtimeout'});
+	$self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
+  $self->setDebug($hshprms{'debug'}) if(defined $hshprms{'debug'});
 
 	#Attributes that cannot be changed in Running State
 	unless($self->isRunning)
 	{
-		$self->setCommand($hshprms{"command"}) if ( defined $hshprms{"command"} );
-    $self->setProfiling($hshprms{"profiling"}) if(defined $hshprms{"profiling"});
+		$self->setCommand($hshprms{'command'}) if ( defined $hshprms{'command'} );
+    $self->setProfiling($hshprms{'profiling'}) if(defined $hshprms{'profiling'});
 	}	#unless($self->isRunning)
 }
 
 sub set
 {
-	my $self = shift;
-	#Take the Method Parameters
-	my %hshprms = @_;
-
-
-	#Set the Name
-	$self->{"_name"} = $hshprms{"name"} if(defined $hshprms{"name"});
-
-	$self->setReadTimeout($hshprms{"check"}) if(defined $hshprms{"check"});
-	$self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
-	$self->setDebug($hshprms{"debug"}) if(defined $hshprms{"debug"});
-	$self->setQuiet($hshprms{"quiet"}) if(defined $hshprms{"quiet"});
-
-	#Attributes that cannot be changed in Running State
-	unless($self->isRunning)
-	{
-		$self->setCommand($hshprms{"command"}) if ( defined $hshprms{"command"} );
-    $self->setProfiling($hshprms{"profiling"}) if(defined $hshprms{"profiling"});
-	}	#unless($self->isRunning)
+  #Pass the Parameters on to Process::SubProcess::setArrProcess()
+  Process::SubProcess::setArrProcess(@_);
 }
 
-sub setName {
+sub setName
+{
   my $self = $_[0];
 
 
@@ -319,12 +304,7 @@ sub setReadTimeout
   #Set the Default Read Timeout
   $self->{'_read_timeout'} = 0 unless(defined $self->{'_read_timeout'});
 
-  if($self->{'_read_timeout'} > 0)
-  {
-    #Disable the Profiling Feature
-    #$self->{'_profiling'} = 0;
-  }
-  else
+  if($self->{'_read_timeout'} < 0)
   {
     #Disable the Read Timeout
     $self->{'_read_timeout'} = 0;
