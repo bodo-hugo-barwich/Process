@@ -640,10 +640,6 @@ sub Check
               #Read the Error Message
               $self->{'_error_message'} .= "Message [" . $self->{'_process_status'} . "]: '$!'\n";
             } #if($!)
-
-            #Mark the Command as failed
-            $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
-
           }
           else  #A Negative Error Code was given
           {
@@ -662,14 +658,17 @@ sub Check
               #Failure without Error Code or Message
               $self->{'_error_message'} .= "Command '" . $self->{'_command'}
                 . "': Command failed with [" . $self->{'_process_status'} . "]!\n";
-
              } #if($!)
-
-            #Mark the Command as failed
-            $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
-
           } #if($self->{'_process_status'} >= 0)
 
+          if($self->{'_process_status'} != 0)
+          {
+            #Mark the Command as failed
+            $self->{'_error_code'} = 1
+              if($self->{'_error_code'} < 1
+                || $self->{'_error_code'} == 4);
+
+          } #if($self->{'_process_status'} != 0)
 
           $self->{'_pipe_readbytes'} = 0 if($self->{'_pipe_readbytes'} < 1);
 
@@ -971,6 +970,9 @@ sub Terminate
 
 		kill('TERM', $self->{'_pid'});
 
+    #Mark Process as have been terminated
+    $self->{"_error_code"} = 4 if($self->{"_error_code"} < 4);
+
 		$self->Check;
 	}
 	else	#Sub Process is not running
@@ -995,7 +997,7 @@ sub Kill
 		kill('KILL', $self->{"_pid"});
 
     #Mark Process as have been killed
-    $self->{"_process_status"} = 4;
+    $self->{"_process_status"} = 9;
     $self->{"_error_code"} = 4 if($self->{"_error_code"} < 4);
 	}
 	else	#Sub Process is not running
