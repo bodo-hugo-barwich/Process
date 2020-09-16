@@ -43,6 +43,8 @@ mv t %{buildroot}%{_docdir}/%{name}/tests
 
 find ./ -type f -name '.gitignore' -exec rm -f {} \;
 
+rm -fR etc
+
 mv lib/Process %{buildroot}%{perl_vendorlib}/
 
 
