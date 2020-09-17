@@ -72,7 +72,7 @@ my $iprccnt = -1;
 
 print "Test: 'Process::SubProcess::Group::Run' do ...\n";
 
-$procgroup = Process::SubProcess::Group::->new(('check' => 2));
+$procgroup = Process::SubProcess::Group::->new;
 
 $itestpause = 2;
 
@@ -100,7 +100,19 @@ $iprccnt = $procgroup->getProcessCount;
 is($iprccnt, 3, "scripts (count: '$iprccnt'): added correctly");
 
 
+$itmstrt = gettimeofday();
+
+print "Process Group Execution Start - Time Now: '$itmstrt' s\n";
+
 is($procgroup->Run, 1, "Process Group Execution: Execution correct");
+
+$itmend = gettimeofday();
+
+$itm = ($itmend - $itmstrt) * 1000;
+
+print "Process Group Execution End - Time Now: '$itmend' s\n";
+
+print "Process Group Execution finished in '$itm' ms\n";
 
 
 for($iprc = 0; $iprc < $iprccnt; $iprc++)
@@ -117,6 +129,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     $rscripterror = $proctest->getErrorString;
     $iscriptstatus = $proctest->getProcessStatus;
 
+    print("ERROR CODE: '", $proctest->getErrorCode, "'\n");
     print("EXIT CODE: '$iscriptstatus'\n");
 
     if(defined $rscriptlog)
@@ -356,7 +369,7 @@ print "\n";
 
 print "Test: 'Process::SubProcess::Group Execution Timeout' do ...\n";
 
-$procgroup = Process::SubProcess::Group::->new(('timeout' => 9));
+$procgroup = Process::SubProcess::Group::->new(('timeout' => 7));
 
 $stestscript = "test_script.pl";
 $itestpause = 3;
@@ -379,9 +392,9 @@ is($proctest->isProfiling, 1, 'Profiling activated');
 
 $procgroup->add($proctest);
 
-$itestpause = 11;
+$itestpause = 13;
 
-$proctest = Process::SubProcess::->new(('name' => 'test-script:11s'
+$proctest = Process::SubProcess::->new(('name' => 'test-script:13s'
   , 'command' => $spath . $stestscript . ' ' . $itestpause
   , 'profiling' => 1));
 
