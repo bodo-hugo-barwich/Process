@@ -679,9 +679,8 @@ sub Wait
 
 sub Run
 {
-  my $self = shift;
   #Take the Method Parameters
-  my %hshprms = @_;
+  my ($self, %hshprms) = @_;
   my $irs = 0;
 
 
@@ -690,6 +689,8 @@ sub Run
   if(scalar(keys %hshprms) > 0)
   {
     $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+    $self->setReadTimeout($hshprms{'read'}) if(defined $hshprms{'read'});
+    $self->setReadTimeout($hshprms{'readtimeout'}) if(defined $hshprms{'readtimeout'});
     $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
   }
 
@@ -780,26 +781,31 @@ sub freeResources
 
 sub clearErrors()
 {
-  my $self = shift;
+  my $self = $_[0];
+  my $sdbgmsg = '';
 
 
-  $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
-    if($self->{"_debug"});
+  $sdbgmsg = "'" . (caller(1))[3] . "' : Call on '" . (caller(0))[3] . "'\n"
+    if($self->{'_debug'});
 
-  if(defined $self->{"_array_processes"})
+  if(defined $self->{'_array_processes'})
   {
     my $sbprc = undef;
 
 
-    foreach $sbprc (@{$self->{"_array_processes"}})
+    foreach $sbprc (@{$self->{'_array_processes'}})
     {
       #Clear all Sub Processes Errors too
       $sbprc->clearErrors;
     } #foreach $sbprc (@{$self->{"_array_processes"}})
   } #if(defined $self->{"_array_processes"})
 
-  $self->{"_error_message"} = "";
-  $self->{"_error_code"}    = 0;
+  $self->{'_report'} = '';
+  $self->{'_error_message'} = '';
+  $self->{'_error_code'}    = 0;
+
+  #Readd last Debug Message
+  $self->{'_report'} .= $sdbgmsg if($self->{'_debug'});
 }
 
 
