@@ -260,6 +260,9 @@ print "\n";
 #------------------------
 #Test: 'Process::SubProcess::Group Profiling Quiet'
 
+my $itesttime = -1;
+
+
 print "Test: 'Process::SubProcess::Group Profiling Quiet' do ...\n";
 
 $procgroup = Process::SubProcess::Group::->new(('check' => 2));
