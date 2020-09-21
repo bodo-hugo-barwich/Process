@@ -5,7 +5,7 @@
 
 Name: perl-Process-SubProcess
 Version: 1.0
-Release: 20200915gitf253067
+Release: 20200920git4673b4e
 Summary: Perl Library for Multiprocessing
 License: see https://dev.perl.org/licenses/
 Group: 		Development/Libraries
@@ -14,9 +14,6 @@ Source:         Process-SubProcess.tar.gz
 BuildArch:      noarch
 
 Requires:       perl(Test::More)
-Requires:       perl(Data::Dump)
-Requires:	perl(Time::HiRes)
-Requires:	perl(IPC::Open3)
 
 
 
@@ -35,6 +32,9 @@ It also implements running multiple Sub Processes simultaneously while keeping a
 %install
 rm -rf %{buildroot}
 
+
+rm -rf %{buildroot}
+
 mkdir -p %{buildroot}%{perl_vendorlib}
 mkdir -p %{buildroot}%{_docdir}/%{name}
 
@@ -42,8 +42,6 @@ mv README.md %{buildroot}%{_docdir}/%{name}/
 mv t %{buildroot}%{_docdir}/%{name}/tests
 
 find ./ -type f -name '.gitignore' -exec rm -f {} \;
-
-rm -fR etc
 
 mv lib/Process %{buildroot}%{perl_vendorlib}/
 
