@@ -56,15 +56,12 @@ my $rscripterror = undef;
 my $iscriptstatus = -1;
 
 
-
-
 #------------------------
 #Test: 'Read Timeout'
 
 my $itm = -1;
 my $itmstrt = -1;
 my $itmend = -1;
-
 my $itmtst = -1;
 my $itmexe = -1;
 
@@ -125,14 +122,12 @@ else
 print "\n";
 
 
-
 #------------------------
 #Test: 'Read Timeout Quiet'
 
 $proctest = undef;
 
 $stestscript = 'quiet_script.pl';
-
 $itestpause = 3;
 
 $itm = -1;
