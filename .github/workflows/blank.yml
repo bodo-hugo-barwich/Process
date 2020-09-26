@@ -29,14 +29,14 @@ jobs:
         run: pwd && ls -lah
         
       # Test the Process::SubProcess Package
-      #- name: Process::SubProcess Package Tests
-      #  run: t/test_subprocess.t
+      - name: Process::SubProcess Package Tests
+        run: t/test_subprocess.t
       # Perfomance Tests on Process::SubProcess Package
-      #- name: Process::SubProcess Package Performance Tests
-      #  run: t/test_performance.t
+      - name: Process::SubProcess Package Performance Tests
+        run: t/test_performance.t
       # Test the Process::SubProcess::Group Package
-      #- name: Listing Directory Contents
-      #  run: t/test_group.t
+      - name: Listing Directory Contents
+        run: t/test_group.t
 
       # Runs a set of commands using the runners shell
       #- name: Run a multi-line script
