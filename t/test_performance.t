@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-06
+# @version 2020-09-20
 # @package Test for the Process::SubProcess Module
 # @subpackage test_performance.t
 

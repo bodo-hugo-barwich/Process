@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-06
+# @version 2020-09-26
 # @package Test for the Process::SubProcess::Group Module
 # @subpackage test_subprocess.t
 
@@ -183,9 +183,9 @@ is($proctest->isProfiling, 1, 'Profiling activated');
 
 $procgroup->add($proctest);
 
-$itestpause = 10;
+$itestpause = 9;
 
-$proctest = Process::SubProcess::->new(('name' => 'test-script:10s'
+$proctest = Process::SubProcess::->new(('name' => 'test-script:9s'
   , 'command' => $spath . $stestscript . ' ' . $itestpause
   , 'profiling' => 1));
 
@@ -288,9 +288,9 @@ is($proctest->isProfiling, 1, 'Profiling activated');
 
 $procgroup->add($proctest);
 
-$itestpause = 10;
+$itestpause = 9;
 
-$proctest = Process::SubProcess::->new(('name' => 'quiet-script:10s'
+$proctest = Process::SubProcess::->new(('name' => 'quiet-script:9s'
   , 'command' => $spath . $stestscript . ' ' . $itestpause
   , 'profiling' => 1));
 
