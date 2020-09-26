@@ -19,6 +19,8 @@ use strict;
 
 use Cwd qw(abs_path);
 
+use Time::HiRes qw(gettimeofday);
+
 use Test::More;
 
 BEGIN
