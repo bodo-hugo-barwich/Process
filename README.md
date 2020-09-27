@@ -1,4 +1,4 @@
-![Automated Tests](https://github.com/bodo-hugo-barwich/Process/workflows/Run%20configured%20Tests%20from%20the%20Test%20Directory/badge.svg?branch=master)
+![Automated Tests](https://github.com/bodo-hugo-barwich/Process/workflows/Automated%20Tests/badge.svg)
 
 # Process
 Process::SubProcess - Perl Module for Multiprocessing 
