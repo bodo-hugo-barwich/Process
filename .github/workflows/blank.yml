@@ -17,6 +17,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+       # List all installed Perl Libraries
+      - name: List all installed Perl Libraries
+        run: dpkg --get-selections | grep -i perl | sort
+        
       # Install missing Perl Libraries
       - name: Install Capture::Tiny Library
         run: sudo apt-get update && sudo apt-get install libcapture-tiny-perl
