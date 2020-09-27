@@ -21,7 +21,7 @@ jobs:
     steps:
       # Install missing Perl Libraries
       - name: Install Capture::Tiny Library
-        run: apt-get update && apt-get install libcapture-tiny-perl
+        run: sudo apt-get update && sudo apt-get install libcapture-tiny-perl
         
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
