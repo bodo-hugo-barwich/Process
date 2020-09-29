@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-20
+# @version 2020-09-29
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -10,7 +10,6 @@
 #
 #---------------------------------
 # Requirements:
-# - The Perl Package "perl-Data-Dump" must be installed
 # - The Perl Package "perl-Time-HiRes" must be installed
 #
 #---------------------------------
@@ -25,11 +24,7 @@
 
 =head1 NAME
 
-Process::SubProcess - implements a Class to manage a Sub Process and read its Output and Errors
-
-The Idea of this API is to launch Sub Processes and keep track of all Output
-on C<STDOUT>, C<STDERR>, the Exit Code and possible System Errors at Launch Time
-within the Context of the External Programm.
+Process::SubProcess - Library to manage Sub Processes as Objects
 
 =cut
 
@@ -51,13 +46,18 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-use Data::Dump qw(dump);
-
+our $VERSION = '2.0';
 
 =head1 DESCRIPTION
 
-C<Process::SubProcess> is a class which implements a Data Set which can be filled up
-gradually without previous class definition.
+C<Process::SubProcess> implements a Class to manage a Sub Process and read its Output and Errors
+
+The Idea of this API is to launch Sub Processes and keep track of all Output
+on C<STDOUT>, C<STDERR>, the C<EXIT CODE> and possible System Errors at Launch Time
+in an object oriented manner.
+This allows an easy aggregation and thus the creation of Sub Process Groups and Sub Process Pools
+for simultaneous execution of multiple Sub Processes while keeping the execution logs
+separated.
 
 =head1 OVERVIEW
 
@@ -75,6 +75,25 @@ use constant FLAG_STDOUT => 1;
 use constant FLAG_STDERR => 2;
 use constant FLAG_ANYOUT => 3;
 
+
+=head1 STATIC METHODS
+
+=over 4
+
+=item runSubProcess ( [ COMMAND | OPTIONS ] )
+
+This creates adhoc an <Process::SubProcess> Object and runs the command given as string.
+
+C<COMMAND> a single scalar parameter will be interpreted as command to execute
+without any additional options.
+
+C<OPTIONS> are passed in a hash like fashion, using key and value pairs.
+Combining the command with additional C<OPTIONS> also requires the C<COMMAND> to be part of
+the hash.
+
+=back
+
+=cut
 
 sub runSubProcess
 {
