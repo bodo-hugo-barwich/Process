@@ -4,16 +4,16 @@
 
 
 Name: perl-Process-SubProcess
-Version: 1.0
-Release: 20200920git4673b4e
-Summary: Perl Library for Multiprocessing
+Version: 2.0
+Release: 20200929gitf5fb244
+Summary: Perl Module for Multiprocessing
 License: see https://dev.perl.org/licenses/
 Group: 		Development/Libraries
 Source:         Process-SubProcess.tar.gz
 
 BuildArch:      noarch
 
-Requires:       perl(Test::More)
+BuildRequires:  perl(Test::More)
 
 
 
@@ -39,9 +39,11 @@ mkdir -p %{buildroot}%{perl_vendorlib}
 mkdir -p %{buildroot}%{_docdir}/%{name}
 
 mv README.md %{buildroot}%{_docdir}/%{name}/
+mv etc %{buildroot}%{_docdir}/%{name}/
 mv t %{buildroot}%{_docdir}/%{name}/tests
 
 find ./ -type f -name '.gitignore' -exec rm -f {} \;
+find ./ -type d -name '.github' -exec rm -fR \;
 
 mv lib/Process %{buildroot}%{perl_vendorlib}/
 
@@ -54,4 +56,5 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_docdir}/%{name}/README.md
 %{perl_vendorlib}/Process
 %dir %{_docdir}/%{name}
+%{_docdir}/%{name}/etc
 %{_docdir}/%{name}/tests
