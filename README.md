@@ -1,4 +1,8 @@
+![Automated Tests](https://github.com/bodo-hugo-barwich/Process/workflows/Automated%20Tests/badge.svg)
+
 # Process
+Process::SubProcess - Perl Module for Multiprocessing 
+
 Running Sub Processes in an easy way while reading STDOUT, STDERR, Exit Code and possible System Errors. \
 It also implements running multiple Sub Processes simultaneously while keeping all Report and Error Messages and Exit Codes 
 seperate.

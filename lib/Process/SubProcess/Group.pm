@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-03-21
+# @version 2020-09-20
 # @package SubProcess Management
-# @subpackage SubProcess/Group.pm
+# @subpackage Process/SubProcess/Group.pm
 
 # This Module defines a Class to manage multiple SubProcess Objects read their Output and Errors
 #
@@ -52,48 +52,56 @@ use Process::SubProcess;
 #Constructors
 
 
-sub new {
-    my $invocant = shift;
-    my $class    = ref($invocant) || $invocant;
-    my $self     = undef;
+sub new
+{
+  #Take the Method Parameters
+  my ($invocant, %hshprms) =  @_;
+  my $class    = ref($invocant) || $invocant;
+  my $self     = undef;
 
-    #Take the Method Parameters
-    my %hshprms = @_;
 
+  #Set the Default Attributes and assign the initial Values
+  $self = {'_array_processes' => []
+    , '_list_processes' => {}
+    , '_check_interval' => -1
+    , '_read_timeout' => -1
+    , '_execution_timeout' => -1
+    , '_start_time' => -1
+    , '_report' => ''
+    , '_error_message' => ''
+    , '_error_code' => 0
+    , '_profiling' => 0
+    , '_debug' => 0
+    , '_quiet' => 0
+  };
 
-    #Set the Default Attributes and assign the initial Values
-    $self = {
-        "_array_processes" => [],
-        "_list_processes"  => {},
-        "_check_interval" => -1,
-        "_read_timeout" => -1,
-        "_execution_timeout" => -1,
-        "_report"          => "",
-        "_error_message"   => "",
-        "_error_code"      => 0,
-        "_profiling" => 0,
-        "_debug" => 0,
-        "_quiet" => 0
-    };
-
+  if(scalar(keys %hshprms) > 0)
+  {
     #Set initial Values
-    $self->{"_execution_timeout"} = $hshprms{"timeout"} if(defined $hshprms{"timeout"});
-    $self->{"_debug"} = $hshprms{"debug"} if(defined $hshprms{"debug"});
-    $self->{"_quiet"} = $hshprms{"quiet"} if(defined $hshprms{"quiet"});
+    $self->{'_debug'} = $hshprms{'debug'} if(defined $hshprms{'debug'});
+    $self->{'_quiet'} = $hshprms{'quiet'} if(defined $hshprms{'quiet'});
+  } #if(scalar(keys %hshprms) > 0)
 
-    #Bestow Objecthood
-    bless $self, $class;
+  #Bestow Objecthood
+  bless $self, $class;
 
+  if(scalar(keys %hshprms) > 0)
+  {
     #Execute initial Configurations
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
+    $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+    $self->setReadTimeout($hshprms{'read'}) if(defined $hshprms{'read'});
+    $self->setReadTimeout($hshprms{'readtimeout'}) if(defined $hshprms{'readtimeout'});
+    $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
+  } #if(scalar(keys %hshprms) > 0)
 
 
-    #Give the Object back
-    return $self;
+  #Give the Object back
+  return $self;
 }
 
-sub DESTROY {
-    my $self = $_[0];
+sub DESTROY
+{
+  my $self = $_[0];
 
 
   #Free the System Resources
@@ -184,25 +192,23 @@ sub add
 
 	if(defined $rsprc)
 	{
-		if($rsprc->isa("Process::ChildProcess")
-			|| $rsprc->isa("Process::SubProcess"))
+		if($rsprc->isa('Process::ChildProcess')
+			|| $rsprc->isa('Process::SubProcess'))
 		{
 			push @{$self->{_array_processes}}, ($rsprc);
 
-      $rsprc->setCheckInterval($self->{"_check_interval"})
-        if(defined $self->{"_check_interval"}
-          && $self->{"_check_interval"} > 0);
+      $rsprc->setReadTimeout($self->{'_read_timeout'})
+        if($self->{'_read_timeout'} > 0);
 
-      $rsprc->setReadTimeout($self->{"_read_timeout"})
-        if(defined $self->{"_read_timeout"}
-          && $self->{"_read_timeout"} > 0);
+      $rsprc->setProfiling($self->{'_profiling'})
+        if($self->{'_profiling'} > 0);
 
 		} #if($rsprc->isa("ChildProcess") || $rsprc->isa("SubProcess"))
 	}	#if(defined $rsprc)
 
 
-  if($self->{"_debug"} > 0
-    && $self->{"_quiet"} < 1)
+  if($self->{'_debug'} > 0
+    && $self->{'_quiet'} < 1)
   {
   	print "self 1 dmp:\n"
   		. dump ($self);
@@ -234,22 +240,15 @@ sub setCheckInterval
 
   $self->{"_check_interval"} = -1 unless(defined $self->{"_check_interval"});
 
-  if(defined $self->{"_array_processes"})
+  if($self->{"_check_interval"} > 0
+    && scalar(@{$self->{"_array_processes"}}) > 0)
   {
-    if(scalar(@{$self->{"_array_processes"}}) > 0)
-    {
-      my $sbprc = undef;
-      my $isbprcchk = sprintf("%d", $self->{"_check_interval"} / scalar(@{$self->{"_array_processes"}}));
+    my $irdtmout = sprintf("%d", $self->{"_check_interval"} / scalar(@{$self->{"_array_processes"}}));
 
 
-      foreach $sbprc (@{$self->{"_array_processes"}})
-      {
-        #Communicate the Change to all Sub Processes
-        $sbprc->setCheckInterval($isbprcchk);
-
-      } #foreach $sbprc (@{$self->{"_array_processes"}})
-    } #if(scalar(@{$self->{"_array_processes"}}) > 0)
-  } #if(defined $self->{"_array_processes"})
+    #Save the required Read Timeout
+    $self->setReadTimeout($irdtmout);
+  } #if($self->{"_check_interval"} > 0 && scalar(@{$self->{"_array_processes"}}) > 0)
 }
 
 sub setReadTimeout
@@ -407,74 +406,75 @@ sub setQuiet
 
 sub Launch
 {
-	my $self = shift;
+	my $self = $_[0];
 	my $irs = 0;
+  my $iprccnt = scalar(@{$self->{'_array_processes'}});
 
 
-  if($self->{"_debug"} > 0
-    && $self->{"_quiet"} < 1)
-  {
-    print "" . (caller(0))[3] . " - go ...\n";
-    print "arr prcs cnt: '" . scalar(@{$self->{"_array_processes"}}) . "'\n";
-  }
+  $self->{'_report'} .= "" . (caller(0))[3] . " - go ...\n"
+    . "arr prcs cnt: '$iprccnt'\n"
+    if($self->{'_debug'});
 
-	if(defined $self->{"_array_processes"})
+	if($iprccnt > 0)
 	{
     my $sbprc = undef;
-    my $sprcnm = "";
-		my $iprcidx = 0;
-		my $iprccnt = scalar(@{$self->{"_array_processes"}});
+    my $sprcnm = '';
+		my $iprcidx = -1;
 
 	  my @arrnow = undef;
-		my $sdate = "";
-		my $stime = "";
+		my $stmnow = '';
 
+
+    if($self->{'_check_interval'} > 0
+      && $self->{'_read_timeout'} > 0
+      && $self->{'_read_timeout'} * $iprccnt > $self->{'_check_interval'})
+    {
+      #Reestablish the Check Interval
+      $self->setCheckInterval($self->{'_check_interval'});
+    }
+
+    if($self->{'_execution_timeout'} > -1)
+    {
+      #Keep track of the Start Time
+      $self->{'_start_time'} = time;
+    }
 
 		for($iprcidx = 0; $iprcidx < $iprccnt; $iprcidx++)
 		{
-			$sbprc = $self->{"_array_processes"}[$iprcidx];
+			$sbprc = $self->{'_array_processes'}[$iprcidx];
 
 			if(defined $sbprc)
 			{
 				$sprcnm = "No. '$iprcidx' - " . $sbprc->getNameComplete;
 
-			  if($self->{"_debug"} > 0
-          && $self->{"_quiet"} < 1)
-        {
-        	print "sb prc no. '$iprcidx' dmp:\n"
-        		. dump ($sbprc);
-        	print "\n";
-        }
-
 				@arrnow = localtime;
-				$sdate  = strftime( "%F", @arrnow );
-				$stime  = strftime( "%T", @arrnow );
+				$stmnow  = strftime('%F %T', @arrnow);
 
-				$self->{"_report"} .= "${sdate} ${stime} : Sub Process ${sprcnm}: Launching ...\n";
+				$self->{'_report'} .= "$stmnow : Sub Process ${sprcnm}: Launching ...\n";
 
-
+        #Launch the Sub Process through Process::SubProcess::Launch()
 				if($sbprc->Launch)
 				{
 					@arrnow = localtime;
-					$sdate  = strftime( "%F", @arrnow );
-					$stime  = strftime( "%T", @arrnow );
+					$stmnow  = strftime('%F %T', @arrnow);
 
-					$self->{"_report"} .= "${sdate} ${stime} : Sub Process ${sprcnm}: Launch OK "
+					$self->{'_report'} .= "$stmnow : Sub Process ${sprcnm}: Launch OK "
 						. "- PID (" . $sbprc->getProcessID . ")\n";
 
 					$irs++ ;
 				}
 				else  #Sub Process Launch failed
 				{
-					$self->{"_error_code"} = $sbprc->getErrorCode
-						if($sbprc->getErrorCode > $self->{"_error_code"});
+				  #Keep the Sub Process Error Code
+					$self->{'_error_code'} = $sbprc->getErrorCode
+						if($sbprc->getErrorCode > $self->{'_error_code'});
 
-					$self->{"_error_message"} .= "Sub Process ${sprcnm}: Launch failed!"
+					$self->{'_error_message'} .= "Sub Process ${sprcnm}: Launch failed!"
 						. "Message: " . $sbprc->getErrorString;
 				}	#if($sbprc->Launch)
 			}	#if(defined $sbprc)
 		}	#for($iprcidx = 0; $iprcidx < $iprccnt; $iprcidx++)
-	}	#if(defined $self->{"_array_processes"})
+	}	#if($iprccnt > 0)
 
 
 	return $irs;
@@ -482,66 +482,76 @@ sub Launch
 
 sub Check
 {
-	my $self = shift;
+	my $self = $_[0];
 	my $irs = 0;
+  my $iprccnt = scalar(@{$self->{'_array_processes'}});
 
 
-  if($self->{"_debug"} > 0
-    && $self->{"_quiet"} < 1)
-  {
-    print "" . (caller(0))[3] . " - go ...\n";
-    print "arr prcs cnt: '" . scalar(@{$self->{"_array_processes"}}) . "'\n";
-  }
+  $self->{'_report'} .= "" . (caller(0))[3] . " - go ...\n"
+    . "arr prcs cnt: '$iprccnt'\n"
+    if($self->{'_debug'});
 
-	if(defined $self->{"_array_processes"})
+	if($iprccnt > 0)
 	{
     my $sbprc = undef;
-    my $sprcnm = "";
+    my $sprcnm = '';
+    my $iprcidx = -1;
 
 	  my @arrnow = undef;
-		my $sdate = "";
-		my $stime = "";
+		my $stmnow = '';
+
+		my $ichkgo = 1;
 
 
-		foreach $sbprc (@{$self->{"_array_processes"}})
+		for($iprcidx = 0; $ichkgo && $iprcidx < $iprccnt; $iprcidx++)
 		{
-			$sprcnm = $sbprc->getNameComplete;
+		  $sbprc = $self->{'_array_processes'}[$iprcidx];
 
-      $self->{"_report"} .= "Sub Process ${sprcnm}: checking ...\n"
-        if($self->{"_debug"} > 0);
+		  if(defined $sbprc)
+		  {
+  			$sprcnm = $sbprc->getNameComplete;
 
-			if($sbprc->isRunning)
-			{
-				if($sbprc->Check)
-				{
-					#Count the Running Sub Processes
-					$irs++ ;
-				}
-				else	#The Sub Process has finished
-				{
-					@arrnow = localtime;
-					$sdate  = strftime( "%F", @arrnow );
-					$stime  = strftime( "%T", @arrnow );
+        $self->{"_report"} .= "Sub Process ${sprcnm}: checking ...\n"
+          if($self->{"_debug"} > 0);
 
-					$self->{"_report"} .= "${sdate} ${stime} : Sub Process ${sprcnm}: "
-						. "finished with [" . $sbprc->getProcessStatus . "]\n";
+  			if($sbprc->isRunning)
+  			{
+  				if($sbprc->Check)
+  				{
+  					#Count the Running Sub Processes
+  					$irs++ ;
+  				}
+  				else	#The Sub Process has finished
+  				{
+  					@arrnow = localtime;
+  					$stmnow  = strftime('%F %T', @arrnow );
 
-					#$sbprc->freeResources;
-				}	#if($sbprc->Check)
-			}
-			else	#The Sub Process is already finished
-			{
-			  if($sbprc->getProcessID > 0)
-			  {
-  				$self->{"_report"} .= "Sub Process ${sprcnm}: "
-  					. "already finished with [" . $sbprc->getProcessStatus . "]\n"
-            if($self->{"_debug"} > 0);
+  					$self->{"_report"} .= "$stmnow : Sub Process ${sprcnm}: "
+  						. "finished with [" . $sbprc->getProcessStatus . "]\n";
 
-  				#$sbprc->freeResources;
-			  }  #if($sbprc->getProcessID > 0)
-			}	#if($sbprc->isRunning)
-		}	#foreach $sbprc (@{$self->{"_array_processes"}})
-	}	#if(defined $self->{"_array_processes"})
+  					#$sbprc->freeResources;
+  				}	#if($sbprc->Check)
+
+          if($self->{'_execution_timeout'} > -1)
+          {
+            #Stop the Checks on Execution Timeout
+            $ichkgo = 0 if(time - $self->{'_start_time'} > $self->{'_execution_timeout'});
+          }
+  			}
+  			else	#The Sub Process is already finished
+  			{
+  			  if($sbprc->getProcessID > 0)
+  			  {
+    				$self->{"_report"} .= "Sub Process ${sprcnm}: "
+    					. "already finished with [" . $sbprc->getProcessStatus . "]\n"
+              if($self->{"_debug"} > 0);
+
+    				#$sbprc->freeResources;
+  			  }  #if($sbprc->getProcessID > 0)
+  			}	#if($sbprc->isRunning)
+		  } #if(defined $sbprc)
+		}	#for($iprc = 0; $ichkgo && $iprc < $iprccnt; $iprc++)
+	}	#if($iprccnt > 0)
 
 
   #Count the Running Sub Processes
@@ -585,22 +595,25 @@ sub Wait
   my $itmrngend = -1;
 
 
-  print "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+  $self->{'_report'} .= "" . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
   if(scalar(keys %hshprms) > 0)
   {
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
-  }
+    $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+    $self->setReadTimeout($hshprms{'read'}) if(defined $hshprms{'read'});
+    $self->setReadTimeout($hshprms{'readtimeout'}) if(defined $hshprms{'readtimeout'});
+    $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
+  } #if(scalar(keys %hshprms) > 0)
 
   do  #while($irng > 0);
   {
-    if($self->{"_check_interval"} > -1
-      || $self->{"_execution_timeout"} > -1)
+    if($self->{'_check_interval'} > -1
+      || $self->{'_execution_timeout'} > -1)
     {
-      $itmchkstrt = time;
+      #Take the Time measured at Launch Time
+      $itmchkstrt = $self->{'_start_time'};
 
-      if($self->{"_execution_timeout"} > -1)
+      if($self->{'_execution_timeout'} > -1)
       {
         if($itmrngstrt < 1)
         {
@@ -675,27 +688,28 @@ sub Wait
 
 sub Run
 {
-  my $self = shift;
   #Take the Method Parameters
-  my %hshprms = @_;
+  my ($self, %hshprms) = @_;
   my $irs = 0;
 
 
-  print "" . (caller(0))[3] . " - go ...\n" if($self->{"_debug"} > 0 && $self->{"_quiet"} < 1);
+  $self->{'_report'} .= "" . (caller(0))[3] . " - go ...\n" if($self->{'_debug'});
 
   if(scalar(keys %hshprms) > 0)
   {
-    $self->setCheckInterval($hshprms{"check"}) if(defined $hshprms{"check"});
-    $self->setTimeout($hshprms{"timeout"}) if(defined $hshprms{"timeout"});
+    $self->setCheckInterval($hshprms{'check'}) if(defined $hshprms{'check'});
+    $self->setReadTimeout($hshprms{'read'}) if(defined $hshprms{'read'});
+    $self->setReadTimeout($hshprms{'readtimeout'}) if(defined $hshprms{'readtimeout'});
+    $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
   }
 
   if($self->Launch)
   {
-    $irs = $self->Wait();
+    $irs = $self->Wait;
   }
   else  #Sub Process Launch failed
   {
-    $self->{"_error_message"} .= "Sub Processes: Process Launch failed!\n";
+    $self->{'_error_message'} .= "Sub Processes: Process Launch failed!\n";
   } #if($self->Launch)
 
 
@@ -776,26 +790,32 @@ sub freeResources
 
 sub clearErrors()
 {
-  my $self = shift;
+  my $self = $_[0];
+  my $sdbgmsg = '';
 
 
-  $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
-    if($self->{"_debug"});
+  $sdbgmsg = "'" . (caller(1))[3] . "' : Call on '" . (caller(0))[3] . "'\n"
+    if($self->{'_debug'});
 
-  if(defined $self->{"_array_processes"})
+  if(defined $self->{'_array_processes'})
   {
     my $sbprc = undef;
 
 
-    foreach $sbprc (@{$self->{"_array_processes"}})
+    foreach $sbprc (@{$self->{'_array_processes'}})
     {
       #Clear all Sub Processes Errors too
       $sbprc->clearErrors;
     } #foreach $sbprc (@{$self->{"_array_processes"}})
   } #if(defined $self->{"_array_processes"})
 
-  $self->{"_error_message"} = "";
-  $self->{"_error_code"}    = 0;
+  $self->{'_report'} = '';
+  $self->{'_error_message'} = '';
+  $self->{'_error_code'} = 0;
+  $self->{'_start_time'} = -1;
+
+  #Readd last Debug Message
+  $self->{'_report'} .= $sdbgmsg if($self->{'_debug'});
 }
 
 
@@ -827,16 +847,24 @@ sub getiProcess
 	return $rsprc;
 }
 
-sub getCheckInterval {
-    my $self = $_[0];
-
-    return $self->{"_check_interval"};
+sub getCheckInterval
+{
+  return $_[0]->{'_check_interval'};
 }
 
-sub getProcessCount {
-    my $self = $_[0];
+sub getReadTimeout
+{
+  return $_[0]->{'_read_timeout'};
+}
 
-    return scalar(@{$self->{"_array_processes"}});
+sub getTimeout
+{
+  return $_[0]->{'_execution_timeout'};
+}
+
+sub getProcessCount
+{
+  return scalar(@{ $_[0]->{"_array_processes"}});
 }
 
 sub getRunningCount
