@@ -5,3 +5,8 @@ perl:
   - "5.26"
   - "5.16"
   - "5.10"
+before_install:
+  # List pre-installed Perl Packages
+  - dpkg --get-selections | grep -i perl
+  # Show Location
+  - pwd && ls -lah
