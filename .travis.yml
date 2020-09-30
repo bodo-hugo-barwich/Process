@@ -8,6 +8,9 @@ perl:
 before_install:
   # List pre-installed Perl Packages
   - dpkg --get-selections | grep -i perl
+  # Install missing Packages with apt-get
+  - echo "apt-get: Install missing Packages"
+  - apt-get update && apt-get install libdata-dump-perl
   # Show Location
   - pwd && ls -lah
   - echo "Install missing Packages"
