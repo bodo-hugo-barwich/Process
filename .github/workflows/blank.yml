@@ -1,24 +1,35 @@
 # This is a basic workflow to help you get started with Actions
+#Run configured Tests from the Test Directory
+name: Automated Tests
 
-name: CI
-
-# Controls when the action will run. Triggers the workflow on push or pull request
+# Controls when the action will run. Triggers the workflow pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+    # Pull Request events on master branch
+    branches: 
+      - master
+  workflow_dispatch:
+     branches:    
+      - master  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # Configure and Run the Testing Job
+  testing:
     # The type of runner that the job will run on
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+       # List all installed Perl Libraries
+      - name: List all installed Perl Libraries
+        run: dpkg --get-selections | grep -i perl | sort
+        
+      # Install missing Perl Libraries
+      - name: Install Capture::Tiny Library
+        run: sudo apt-get update && sudo apt-get install libcapture-tiny-perl
+        
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
@@ -35,7 +46,7 @@ jobs:
       - name: Process::SubProcess Package Performance Tests
         run: t/test_performance.t
       # Test the Process::SubProcess::Group Package
-      - name: Listing Directory Contents
+      - name: Process::SubProcess::Group Package Tests
         run: t/test_group.t
 
       # Runs a set of commands using the runners shell
