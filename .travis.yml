@@ -7,10 +7,10 @@ perl:
   - "5.10"
 before_install:
   # List pre-installed Perl Packages
-  - dpkg --get-selections | grep -i perl
+  - dpkg --get-selections | grep -i perl | sort
   # Install missing Packages with apt-get
   - echo "apt-get - Install missing Packages"
-  - sudo apt-get update && sudo apt-get install libdata-dump-perl
+  - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   # Show Location
   - pwd && ls -lah
   - echo "Install missing Packages"
