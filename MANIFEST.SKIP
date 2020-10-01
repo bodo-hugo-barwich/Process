@@ -1,0 +1,7 @@
+.git
+.github
+.includepath
+.project
+.travis.yml
+MANIFEST.bak
+MANIFEST.SKIP

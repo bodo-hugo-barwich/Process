@@ -1,0 +1,21 @@
+cpanfile
+etc/rpm/perl-Process-SubProcess.spec
+lib/Process/ChildProcess.pm
+lib/Process/ChildProcessExecutable.pm
+lib/Process/SubProcess.pm
+lib/Process/SubProcess/Group.pm
+lib/Process/SubProcess/Pool.pm
+Makefile
+Makefile.PL
+MANIFEST			This list of files
+MYMETA.json
+MYMETA.yml
+README.md
+t/exception_script.pl
+t/nobashbang_script.pl
+t/noexec_script.pl
+t/quiet_script.pl
+t/test_group.t
+t/test_performance.t
+t/test_script.pl
+t/test_subprocess.t
