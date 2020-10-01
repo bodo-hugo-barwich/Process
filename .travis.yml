@@ -14,7 +14,8 @@ before_install:
   # Show Location
   - pwd && ls -lah
   - echo "Install missing Packages"
-  - perlbrew install 5.10 --mirror https://www.cpan.org/src/5.0/perl-5.10.1.tar.bz2
+  - perlbrew mirror http://ftp.rediris.es/mirror/CPAN/
+  - perlbrew install 5.10 
   - perlbrew install 5.32
   - perlbrew install-cpanm
   - perlbrew list
