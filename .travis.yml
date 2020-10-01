@@ -14,3 +14,7 @@ before_install:
   # Show Location
   - pwd && ls -lah
   - echo "Install missing Packages"
+  - perlbrew install 5.10
+  - perlbrew install 5.32
+  - perlbrew install-cpanm
+  - perlbrew list
