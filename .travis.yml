@@ -1,10 +1,8 @@
 language: perl
 perl:
-  - "5.32"
   - "5.28"
   - "5.24"
   - "5.16"
-  - "5.10"
 before_install:
   # List pre-installed Perl Packages
   - dpkg --get-selections | grep -i perl | sort
@@ -13,8 +11,6 @@ before_install:
   - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   # Show Location
   - pwd && ls -lah
-  - echo "Install missing Packages"
-  - perlbrew install 5.10 --mirror http://ftp.rediris.es/mirror/CPAN/
-  - perlbrew install 5.32
-  - perlbrew install-cpanm
+  - echo "cpanm - Install missing Packages"
+  - perlbrew available
   - perlbrew list
