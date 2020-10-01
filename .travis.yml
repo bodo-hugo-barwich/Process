@@ -1,8 +1,10 @@
 language: perl
 perl:
+  - "5.32.0"
   - "5.28"
   - "5.24"
   - "5.16"
+  - "5.10.1"
 before_install:
   # List pre-installed Perl Packages
   - dpkg --get-selections | grep -i perl | sort
@@ -15,4 +17,5 @@ before_install:
   - perlbrew available
   - perlbrew install perl-5.10.1
   - perlbrew install perl-5.32.0 
+  - perlbrew install-cpanm
   - perlbrew list
