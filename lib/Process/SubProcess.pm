@@ -494,6 +494,16 @@ sub Launch
       $self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
     } #if($@)
 
+    if(defined $self->{'_pid'}
+      && $self->{'_pid'} > 0)
+    {
+      #The open3() Call has succeeded
+
+      #Suppressing the System Error 29 silently
+      $! = 0 if(($! + 0) == 29);
+
+    } #if(defined $self->{'_pid'} && $self->{'_pid'} > 0)
+
     if($!)
     {
       $self->{'_pid'} = -1;

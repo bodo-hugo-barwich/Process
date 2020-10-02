@@ -138,7 +138,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscriptlog, undef, "STDOUT was captured");
+      isnt($rscriptlog, undef, "STDOUT was captured");
     } #if(defined $rscriptlog)
 
     if(defined $rscripterror)
@@ -147,7 +147,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscripterror, undef, "STDERR was captured");
+      isnt($rscripterror, undef, "STDERR was captured");
     } #if(defined $rscripterror)
   } #if(defined $proctest)
 } #for($iprc = 0; $iprc < $iprccnt; $iprc++)
@@ -240,7 +240,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscriptlog, undef, "STDOUT was captured");
+      isnt($rscriptlog, undef, "STDOUT was captured");
     } #if(defined $rscriptlog)
 
     if(defined $rscripterror)
@@ -249,7 +249,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscripterror, undef, "STDERR was captured");
+      isnt($rscripterror, undef, "STDERR was captured");
     } #if(defined $rscripterror)
   } #if(defined $proctest)
 } #for($iprc = 0; $iprc < $iprccnt; $iprc++)
@@ -350,7 +350,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscriptlog, undef, "STDOUT was captured");
+      isnt($rscriptlog, undef, "STDOUT was captured");
     } #if(defined $rscriptlog)
 
     if(defined $rscripterror)
@@ -359,7 +359,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscripterror, undef, "STDERR was captured");
+      isnt($rscripterror, undef, "STDERR was captured");
     } #if(defined $rscripterror)
   } #if(defined $proctest)
 } #for($iprc = 0; $iprc < $iprccnt; $iprc++)
@@ -478,7 +478,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscriptlog, undef, "STDOUT was captured");
+      isnt($rscriptlog, undef, "STDOUT was captured");
     } #if(defined $rscriptlog)
 
     if(defined $rscripterror)
@@ -487,7 +487,7 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
     }
     else
     {
-      isnt($$rscripterror, undef, "STDERR was captured");
+      isnt($rscripterror, undef, "STDERR was captured");
     } #if(defined $rscripterror)
   } #if(defined $proctest)
 } #for($iprc = 0; $iprc < $iprccnt; $iprc++)
@@ -495,7 +495,6 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 is($iprctmoutcnt, 1, "'1' Process timed out as expected");
 
 print("Process Group Execution Timeout - Count: '$iprctmoutcnt'\n");
-
 
 print "\n";
 
