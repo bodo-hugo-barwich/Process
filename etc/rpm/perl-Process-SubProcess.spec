@@ -5,7 +5,7 @@
 
 Name: perl-Process-SubProcess
 Version: 2.0
-Release: 20200929gitf5fb244
+Release: 20201002git19c8b0a
 Summary: Perl Module for Multiprocessing
 License: see https://dev.perl.org/licenses/
 Group: 		Development/Libraries
@@ -42,8 +42,9 @@ mv README.md %{buildroot}%{_docdir}/%{name}/
 mv etc %{buildroot}%{_docdir}/%{name}/
 mv t %{buildroot}%{_docdir}/%{name}/tests
 
+rm -f Makefile* *META* MANIFEST* cpanfile .travis*
+rm -fR .github
 find ./ -type f -name '.gitignore' -exec rm -f {} \;
-find ./ -type d -name '.github' -exec rm -fR \;
 
 mv lib/Process %{buildroot}%{perl_vendorlib}/
 
