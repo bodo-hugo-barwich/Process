@@ -55,6 +55,7 @@ my $proctest = undef;
 my $rscriptlog = undef;
 my $rscripterror = undef;
 my $iscriptstatus = -1;
+my $irunok = -1;
 
 
 #------------------------
@@ -160,10 +161,19 @@ $rscripterror = $proctest->getErrorString;
 $iscriptstatus = $proctest->getProcessStatus;
 
 is($proctest->getErrorCode, 4, "ERROR CODE '4' is correct");
+ok($iscriptstatus < 1, "EXIT CODE is correct");
 
-is($iscriptstatus, -1, "EXIT CODE was not returned");
+print("ERROR CODE: '", $proctest->getErrorCode, "'\n");
+print("EXIT CODE: '$iscriptstatus'\n");
 
-isnt($rscripterror, undef, "STDERR Ref is returned");
+isnt($rscriptlog, undef, "STDOUT was captured");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+
+isnt($rscripterror, undef, "STDERR was captured");
 
 if(defined $rscripterror)
 {
@@ -184,21 +194,54 @@ $stestscript = 'no_script.sh';
 
 $proctest = Process::SubProcess::->new(('command' => $spath . $stestscript));
 
-is($proctest->Run, 0, "script '$stestscript': Execution failed");
+$irunok = $proctest->Run;
 
 $rscriptlog = $proctest->getReportString;
 $rscripterror = $proctest->getErrorString;
 $iscriptstatus = $proctest->getProcessStatus;
 
+if($iscriptstatus == 255)
+{
+  is($irunok, 1, "script '$stestscript': Execution is correct");
+}
+else
+{
+  is($irunok, 0, "script '$stestscript': Execution failed");
+}
+
 is($proctest->getErrorCode, 1, "ERROR CODE '1' is correct");
 
-is($iscriptstatus, 2, "EXIT CODE '2' is correct");
+if($iscriptstatus == 255)
+{
+  is($iscriptstatus, 255, "EXIT CODE '255' is correct");
+}
+else
+{
+  is($iscriptstatus, 2, "EXIT CODE '2' is correct");
+}
 
-isnt($rscripterror, undef, "STDERR Ref is returned");
+print("ERROR CODE: '", $proctest->getErrorCode, "'\n");
+print("EXIT CODE: '$iscriptstatus'\n");
+
+isnt($rscriptlog, undef, "STDOUT was captured");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+
+isnt($rscripterror, undef, "STDERR was captured");
 
 if(defined $rscripterror)
 {
-  ok($$rscripterror =~ qr/no such file/i, "STDERR has Not Found Error");
+  if(index($$rscripterror, 'open3') != -1)
+  {
+    ok(index($$rscripterror, 'open3') != -1, "STDERR has open3() Error");
+  }
+  else
+  {
+    ok($$rscripterror =~ qr/no such file/i, "STDERR has Not Found Error");
+  }
 
   print("STDERR: '$$rscripterror'\n");
 } #if(defined $rscripterror)
@@ -216,21 +259,51 @@ $stestscript = 'noexec_script.pl';
 
 $proctest = Process::SubProcess::->new(('command' => $spath . $stestscript));
 
-is($proctest->Run, 0, "script '$stestscript': Execution failed");
+$irunok = $proctest->Run;
 
 $rscriptlog = $proctest->getReportString;
 $rscripterror = $proctest->getErrorString;
 $iscriptstatus = $proctest->getProcessStatus;
 
+if($iscriptstatus == 255)
+{
+  is($irunok, 1, "script '$stestscript': Execution is correct");
+}
+else
+{
+  is($irunok, 0, "script '$stestscript': Execution failed");
+}
+
 is($proctest->getErrorCode, 1, "ERROR CODE '1' is correct");
 
-is($iscriptstatus, 13, "EXIT CODE '13' is correct");
+if($iscriptstatus == 255)
+{
+  is($iscriptstatus, 255, "EXIT CODE '255' is correct");
+}
+else
+{
+  is($iscriptstatus, 13, "EXIT CODE '13' is correct");
+}
 
-isnt($rscripterror, undef, "STDERR Ref is returned");
+isnt($rscriptlog, undef, "STDOUT was captured");
+
+if(defined $rscriptlog)
+{
+  print("STDOUT: '$$rscriptlog'\n");
+}
+
+isnt($rscripterror, undef, "STDERR was captured");
 
 if(defined $rscripterror)
 {
-  ok($$rscripterror =~ qr/permission denied/i, "STDERR has No Permission Error");
+  if(index($$rscripterror, 'open3') != -1)
+  {
+    ok(index($$rscripterror, 'open3') != -1, "STDERR has open3() Error");
+  }
+  else
+  {
+    ok($$rscripterror =~ qr/permission denied/i, "STDERR has No Permission Error");
+  }
 
   print("STDERR: '$$rscripterror'\n");
 } #if(defined $rscripterror)
