@@ -20,4 +20,4 @@ install:
   - if: perl != "5.10"
     script: "cpanm -v --installdeps --notest ."
   - if: perl == "5.10"
-    script: "cpanm -v --installdeps --with-feature=test_perl-5-10"
+    script: "cpanm -v --installdeps --with-feature=test_perl-5-10 ."
