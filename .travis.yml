@@ -16,4 +16,4 @@ before_install:
   - echo "cpanm - Install missing Packages"
   - perlbrew available
   - perlbrew list
-  - if [ $TRAVIS_PERL_VERSION eq "5.10" ]; then cpanm -v --installdeps --with-feature=test_perl-5-10 . ; perl-build 5.10.1 ; fi
+  - if [ "$TRAVIS_PERL_VERSION" == "5.10" ]; then cpanm -v --installdeps --with-feature=test_perl-5-10 . ; perl-build 5.10.1 ; fi
