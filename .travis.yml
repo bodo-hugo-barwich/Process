@@ -12,7 +12,7 @@ before_install:
   - echo "apt-get - Install missing Packages"
   - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   # Show Location
-  - whoami ; echo "HOME: '$HOME'"; pwd ; ls -lah
+  - whoami ; echo "HOME: '$HOME'" ; pwd ; ls -lah ;
   - echo "cpanm - Install missing Packages"
   - perlbrew available
   - perlbrew list
