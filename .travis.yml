@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   # Show Location
   - >
-    whoami ; 
+    echo "USER: " $(whoami) ; 
     echo "HOME: '$HOME'" ; 
     pwd ; 
     ls -lah ;
@@ -27,5 +27,5 @@ before_install:
     perl -Mlocal::lib ;
     cpanm -v --installdeps --with-feature=test_perl-5.10 . ; 
     /home/travis/perl5/bin/perl-build --definitions ;
-    /home/travis/perl5/bin/perl-build 5.10.1 ~/perl/5.10.1 ; 
+    /home/travis/perl5/bin/perl-build 5.10.1 ~/perl/5.10.1 && perlbrew use 5.10.1 ; 
     fi
