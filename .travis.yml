@@ -6,17 +6,21 @@ perl:
   - "5.16"
   - "5.10.1"
 before_install:
-  # List pre-installed Perl Packages
-  - dpkg --get-selections | grep -i perl | sort
-  # Install missing Packages with apt-get
-  - echo "apt-get - Install missing Packages"
-  - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   # Show Location
   - >
     echo "USER: " $(whoami) ; 
     echo "HOME: '$HOME'" ; 
     pwd ; 
     ls -lah ;
+  # List pre-installed Perl Packages
+  - dpkg --get-selections | grep -i perl | sort
+  # Install missing Packages with apt-get
+  - echo "apt-get - Install missing Packages"
+  - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
+  - >
+    if [ "$TRAVIS_PERL_VERSION" == "5.10.1" ]; then 
+    sudo apt-get install liblocal-lib-perl libmodule-build-perl libextutils-config-perl libextutils-helpers-perl libextutils-installpaths-perl
+    fi
   - echo "cpanm - Install missing Packages"
   - perlbrew available
   - perlbrew list
