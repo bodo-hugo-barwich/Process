@@ -12,10 +12,11 @@ before_install:
   - echo "apt-get - Install missing Packages"
   - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   # Show Location
-  - pwd && ls -lah
+  - whoami ; echo "HOME: '$HOME'"; pwd ; ls -lah
   - echo "cpanm - Install missing Packages"
   - perlbrew available
   - perlbrew list
+  # Do Perl 5.10 Installation
   - >
     if [ "$TRAVIS_PERL_VERSION" == "5.10" ]; then 
     cpanm -v --installdeps --with-feature=test_perl-5.10 . ; 
