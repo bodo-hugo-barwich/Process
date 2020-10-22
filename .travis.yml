@@ -28,4 +28,5 @@ before_install:
     cpanm -v --installdeps --with-feature=test_perl-5.10 . ; 
     /home/travis/perl5/bin/perl-build --definitions ;
     /home/travis/perl5/bin/perl-build 5.10.1 ~/perl5/perlbrew/perls/perl-5.10.1 && perlbrew switch 5.10.1 ; 
+    perl -v ;
     fi
