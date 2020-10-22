@@ -19,7 +19,8 @@ before_install:
   - sudo apt-get update && sudo apt-get install libdata-dump-perl libcapture-tiny-perl
   - >
     if [ "$TRAVIS_PERL_VERSION" == "5.10.1" ]; then 
-    sudo apt-get install liblocal-lib-perl libmodule-build-perl libextutils-config-perl libextutils-helpers-perl libextutils-installpaths-perl
+    sudo apt-get install liblocal-lib-perl libmodule-build-perl libextutils-config-perl libextutils-helpers-perl libextutils-installpaths-perl ;
+    sudo apt-get install libhttp-tiny-perl ;
     fi
   - echo "cpanm - Install missing Packages"
   - perlbrew available
