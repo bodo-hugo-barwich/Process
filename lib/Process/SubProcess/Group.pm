@@ -718,7 +718,7 @@ sub Run
 
 sub Terminate
 {
-  my $self = shift;
+  my $self = $_[0];
 
 
   $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
@@ -744,7 +744,7 @@ sub Terminate
 
 sub Kill
 {
-  my $self = shift;
+  my $self = $_[0];
 
 
   $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
@@ -769,7 +769,7 @@ sub Kill
 
 sub freeResources
 {
-  my $self = shift;
+  my $self = $_[0];
 
 
   $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
@@ -826,9 +826,9 @@ sub clearErrors()
 
 sub getiProcess
 {
-	my $self = shift;
+	my $self = $_[0];
 	my $rsprc = undef;
-	my $iidx = shift;
+	my $iidx = $_[1];
 
 
   #Index must be a positive whole Number
@@ -930,14 +930,14 @@ sub getReportString
   return \$_[0]->{"_report"};
 }
 
-sub getErrorCode
-{
-  return $_[0]->{"_error_code"};
-}
-
 sub getErrorString
 {
   return \$_[0]->{"_error_message"};
+}
+
+sub getErrorCode
+{
+  return $_[0]->{"_error_code"};
 }
 
 sub isProfiling
