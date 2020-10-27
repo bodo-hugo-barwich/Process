@@ -130,6 +130,6 @@ done_testing();
 
 # Documentation
 The Class Diagramm kann be found at:\
-[Class Diagram for the Package 'Process'](doc/Process.jpg)
+[Class Diagram for the Package 'Process'](docs/Process.jpg)
 
 
