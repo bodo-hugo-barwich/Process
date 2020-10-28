@@ -10,11 +10,11 @@
 #---------------------------------
 # Requirements:
 # - The Perl Package "perl-Data-Dump" must be installed
-# - The Perl Module "SubProcess.pm" must be installed
+# - The Perl Module "Process/SubProcess.pm" must be installed
 #
 #---------------------------------
 # Extensions:
-# - The Perl Module "ChildProcess.pm" must be installed
+# - The Perl Module "Process/ChildProcess.pm" must be installed
 #
 #---------------------------------
 # Features:

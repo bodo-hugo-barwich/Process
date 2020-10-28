@@ -3,7 +3,7 @@
 # @author Bodo (Hugo) Barwich
 # @version 2020-03-21
 # @package SubProcess Management
-# @subpackage SubProcess/Pool.pm
+# @subpackage Process/SubProcess/Pool.pm
 
 # This Module defines a Class to manage multiple SubProcess Objects read their Output and Errors
 # It extends the SubProcess::Group Functionality to limit the amount of created
@@ -12,7 +12,7 @@
 #---------------------------------
 # Requirements:
 # - The Perl Package "perl-Data-Dump" must be installed
-# - The Perl Module "SubProcess/Group.pm" must be installed
+# - The Perl Module "Process/SubProcess/Group.pm" must be installed
 #
 #---------------------------------
 # Features:
