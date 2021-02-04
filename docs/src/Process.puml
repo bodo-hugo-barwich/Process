@@ -1,0 +1,115 @@
+@startuml
+package "package 'Process'" <<Folder>> {
+class “Process::SubProcess” {
+.. Static Methods ..
+{static} + runSubProcess(command: String[, name: String][, check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer][, profiling: Boolean][, debug: Boolean]) : [RString, RString, Integer]
+.. Constructors ..
+{static} + new([name: String][, command: String][, check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer][, profiling: Boolean][, debug: Boolean]) : “Process::SubProcess”
++ DESTROY()
+.. Administration Methods ..
++ setArrProcess([name: String][, command: String][, check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer][, profiling: Boolean][, debug: Boolean])
++ set([name: String][, command: String][, check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer][, profiling: Boolean][, debug: Boolean])
++ setName(String)
++ setCommand(String)
++ setReadTimeout(Integer)
++ setTimeout(Integer)
++ setProfiling([Boolean])
++ setDebug([Boolean])
++ Launch() : Boolean
++ Check() : Boolean
++ Read()
++ Wait([check: Integer][, timeout: Integer]) : Boolean
++ Run([check: Integer][, timeout: Integer]) : Boolean
++ Terminate()
++ Kill()
++ freeResources()
++ clearErrors()
+.. Consultation Methods ..
++ getProcessID() : Integer
++ getName() : String
++ getNameComplete() : String
++ getCommand() : String
++ getReadTimeout() : Integer
++ getTimeout() : Integer
++ isRunning() : Boolean
++ getReportString() : RString
++ getErrorString() : RString
++ getErrorCode() : Integer
++ getProcessStatus() : Integer
++ getExecutionTime() : Float
++ isProfiling() : Boolean
++ isDebug() : Boolean
+}
+
+
+class “Process::SubProcess::Group” {
+.. Constructors ..
+{static} + new([check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer][, debug: Boolean][, quiet: Boolean]) : “Process::SubProcess::Group”
++ DESTROY()
+.. Administration Methods ..
++ add([“Process::SubProcess”]) : “Process::SubProcess”
++ setCheckInterval(Integer)
++ setReadTimeout(Integer)
++ setTimeout(Integer)
++ setProfiling([Boolean])
++ setDebug([Boolean])
++ setQuiet([Boolean])
++ Launch() : Boolean
++ Check() : Integer
++ checkiProcess(Integer) : Boolean
++ Wait([check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer]) : Boolean
++ Run([check: Integer][, read: Integer][, readtimeout: Integer][, timeout: Integer]) : Boolean
++ Terminate()
++ Kill()
++ freeResources()
++ clearErrors()
+.. Consultation Methods ..
++ getiProcess(Integer) : “Process::SubProcess”
++ getCheckInterval() : Integer
++ getReadTimeout() : Integer
++ getTimeout() : Integer
++ getProcessCount() : Integer
++ getRunningCount() : Integer
++ getFreeCount() : Integer
++ getFinishedCount() : Integer
++ getReportString() : RString
++ getErrorString() : RString
++ getErrorCode() : Integer
++ isProfiling() : Boolean
++ isDebug() : Boolean
++ isQuiet() : Boolean
+}
+
+
+class “Process::SubProcess::Pool” {
+.. Constructors ..
+{static} + new([minprocesscount: Integer][, maxprocesscount: Integer])
+.. Administration Methods ..
++ add([“Process::SubProcess”]) : “Process::SubProcess”
++ setMinProcessCount(Integer)
++ setMaxProcessCount(Integer)
++ waitFirst() : Boolean
++ waitNext() : Boolean
+.. Consultation Methods ..
++ getFreeProcess() : “Process::SubProcess”
++ getFinishedProcess() : “Process::SubProcess”
++ getMinProcessCount() : Integer
++ getMaxProcessCount() : Integer
+}
+
+
+note as Note_RString
+RString : Reference to String (\String)
+end note
+
+
+
+“Process::SubProcess” .. Note_RString
+“Process::SubProcess::Group” .. Note_RString
+
+
+“Process::SubProcess::Group” “1" *-up- "n" “Process::SubProcess” : manages
+“Process::SubProcess::Group” <|-right- “Process::SubProcess::Pool”
+}
+
+@enduml

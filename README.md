@@ -8,6 +8,14 @@ Running Sub Processes in an easy way while reading STDOUT, STDERR, Exit Code and
 It also implements running multiple Sub Processes simultaneously while keeping all Report and Error Messages and Exit Codes 
 seperate.
 
+# Features
+Some important Features are:
+* Asynchronous Launch
+* Reads Big Outputs
+* Execution Timeout
+* Configurable Read Interval
+* Captures possible System Errors at Launch Time like "file not found" Errors
+
 # Motivation
 This Module was conceived out of the need to launch multiple Tasks simulaneously while still keeping each Log and Error Messages and Exit Codes separately. \
 As I developed it as Prototype at:
@@ -74,7 +82,6 @@ script 'test_script.pl' END 1 ERROR
 '
 ```
 
-
 # Usage
 ## runSubProcess() Function
 Demonstrating the `runSubProcess()` Function Use Case:
@@ -121,10 +128,8 @@ if(defined $rscripterror)
 done_testing();
 ```
 
-# Features
-Some important Features are:
-* Asynchronous Launch
-* Reads Big Outputs
-* Execution Timeout
-* Configurable Read Interval
-* Captures possible System Errors at Launch Time like "file not found" Errors
+# Documentation
+The Class Diagramm kann be found at:\
+[Class Diagram for the Package 'Process'](docs/Process.jpg)
+
+
