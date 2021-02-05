@@ -568,8 +568,6 @@ for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
 is($procgroup->getRunningCount, 3, "Process Group Execution: All Processes are launched");
 
-$procgroup->setDebug;
-
 is($procgroup->Wait(), 0, "Process Group Execution: Execution failed as expected");
 
 $itmend = gettimeofday();
