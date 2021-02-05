@@ -581,9 +581,8 @@ sub checkiProcess
 
 sub Wait
 {
-  my $self = shift;
   #Take the Method Parameters
-  my %hshprms = @_;
+  my ($self, %hshprms) = @_;
   my $irng = -1;
   my $irs = 0;
 
@@ -605,13 +604,23 @@ sub Wait
     $self->setTimeout($hshprms{'timeout'}) if(defined $hshprms{'timeout'});
   } #if(scalar(keys %hshprms) > 0)
 
+  #Set the Start Time if it is not set yet
+  $self->{'_start_time'} = time if($self->{'_start_time'} < 1);
+
   do  #while($irng > 0);
   {
     if($self->{'_check_interval'} > -1
       || $self->{'_execution_timeout'} > -1)
     {
-      #Take the Time measured at Launch Time
-      $itmchkstrt = $self->{'_start_time'};
+      if($itmchkstrt < 1)
+      {
+        #Take the Time measured at Launch Time
+        $itmchkstrt = $self->{'_start_time'};
+      }
+      else  #It is not the first Check
+      {
+        $itmchkstrt = time;
+      } #if($itmchkstrt < 1)
 
       if($self->{'_execution_timeout'} > -1)
       {
@@ -637,12 +646,7 @@ sub Wait
         $itmchk = $itmchkend - $itmchkstrt;
         $itmrng = $itmrngend - $itmrngstrt;
 
-        if($self->{"_debug"} > 0
-          && $self->{"_quiet"} < 1)
-        {
-          print "wait tm chk: '$itmchk'\n";
-          print "wait tm rng: '$itmrng'\n";
-        }
+        $self->{'_report'} .= "wait - tm rng: '$itmrng'; tm chk: '$itmchk'\n" if($self->{"_debug"});
 
         if($self->{"_execution_timeout"} > -1
           && $itmrng >= $self->{"_execution_timeout"})
@@ -660,9 +664,8 @@ sub Wait
         if($irng > 0
           && $itmchk < $self->{"_check_interval"})
         {
-          print "wait sleep '" . ($self->{"_check_interval"} - $itmchk) . "' s ...\n"
-            if($self->{"_debug"} > 0
-              && $self->{"_quiet"} < 1);
+          $self->{'_report'} .= "wait - sleep '" . ($self->{"_check_interval"} - $itmchk) . "' s ...\n"
+            if($self->{"_debug"});
 
           sleep ($self->{"_check_interval"} - $itmchk);
         }
