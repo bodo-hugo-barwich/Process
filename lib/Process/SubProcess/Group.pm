@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-20
+# @version 2021-01-05
 # @package SubProcess Management
 # @subpackage Process/SubProcess/Group.pm
 

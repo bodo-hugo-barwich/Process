@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-26
+# @version 2021-01-05
 # @package Test for the Process::SubProcess::Group Module
-# @subpackage test_subprocess.t
+# @subpackage test_group.t
 
 # This Module runs tests on the Process::SubProcess::Group Module
 #
@@ -41,8 +41,8 @@ my $smodule = "";
 my $spath = abs_path($0);
 
 
-($smodule = $spath) =~ s/.*\/([^\/]+)$/$1/;
-$spath =~ s/^(.*\/)$smodule$/$1/;
+($smodule = $spath) =~ s#.*\/([^\/]+)$#$1#;
+$spath =~ s#^(.*\/)$smodule$#$1#;
 
 
 my $stestscript = "test_script.pl";

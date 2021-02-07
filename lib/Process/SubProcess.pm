@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2020-09-29
+# @version 2021-02-06
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -576,8 +576,7 @@ sub Check
   	$self->{'_report'} .= '' . (caller(0))[3] . " - go ...\n" ;
   } #if($self->{'_debug'})
 
-	if(defined $self->{'_pid'}
-		&& $self->{'_pid'} > -1)
+	if($self->{'_pid'} != -1)
 	{
 		#------------------------
 		#Check Child Process running or finished
@@ -685,31 +684,31 @@ sub Check
 					$self->Read;
 
           #Close the Process Log Message Pipe
-          close $self->{"_log_pipe"};
+          close $self->{'_log_pipe'};
           #Close the Process Error Message Pipe
-          close $self->{"_error_pipe"};
+          close $self->{'_error_pipe'};
 
 				}
 				else	#Process ID does not match
 				{
-					$self->{"_error_message"} .= "ERROR: Process ($ifnshpid): "
+					$self->{'_error_message'} .= "ERROR: Process ($ifnshpid): "
 						."Unknown Process finished.\n";
 
-					$self->{"_error_code"} = 1 if($self->{"_error_code"} < 1);
+					$self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
 
 				}	#if($ifnshpid == $self->{"_pid"})
 			}	#if($ifnshpid > 0)
 		}
 		else	#Sub Process ID is set but the Process does not exist
 		{
-			if($self->{"_process_status"} < 0)
+			if($self->{'_process_status'} < 0)
 			{
 				#------------------------
 				#The Child Process ID was captured but no Process Status Code was captured
 
-				$self->{"_error_message"} .= "Sub Process ${sprcnm}: Process does not exist.\n";
+				$self->{'_error_message'} .= "Sub Process ${sprcnm}: Process does not exist.\n";
 
-				$self->{"_error_code"} = 1 if($self->{"_error_code"} < 1);
+				$self->{'_error_code'} = 1 if($self->{'_error_code'} < 1);
 
 			}
 			else	#The Child Process has already finished
@@ -717,12 +716,7 @@ sub Check
 
 			}	#if($self->{"_process_status"} < 0)
 		}	#if($ifnshpid > -1)
-	}
-	else	#Child Process ID was not captured
-	{
-		$self->{"_pid"} = -1 unless(defined $self->{"_pid"});
-		$self->{"_process_status"} = -1 unless(defined $self->{"_process_status"});
-	}	#if(defined $self->{"_pid"} && $self->{"_pid"} > -1)
+	}	#if($self->{"_pid"} != -1)
 
 
 	#Return the Check Result
@@ -1017,25 +1011,25 @@ sub Kill
 
 sub freeResources
 {
-	my $self = shift;
+	my $self = $_[0];
 
 
-  $self->{"_report"} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
-    if($self->{"_debug"});
+  $self->{'_report'} .= "'" . (caller(1))[3] . "' : Signal to '" . (caller(0))[3] . "'\n"
+    if($self->{'_debug'});
 
-	if($self->isRunning > 0)
+	if($self->isRunning)
 	{
 		#Kill a still running Sub Process
 		$self->Kill();
 	}
 
 	#Resource can only be freed if the Sub Process has terminated
-	if($self->isRunning < 1)
+	unless($self->isRunning)
 	{
-		$self->{"_log_pipe"} = undef;
-		$self->{"_error_pipe"} = undef;
-		$self->{"_pipe_selector"} = undef;
-	}	#if($self->isRunning < 1)
+		$self->{'_log_pipe'} = undef;
+		$self->{'_error_pipe'} = undef;
+		$self->{'_pipe_selector'} = undef;
+	}	#unless($self->isRunning)
 }
 
 sub clearErrors()
@@ -1109,8 +1103,13 @@ sub isRunning
   my $irng = 0;
 
 
-	#The Process got a Process ID but did not get a Process Status Code yet
-	$irng = 1 if($self->{'_pid'} > 0 && $self->{'_process_status'} < 0);
+  #Check the Process ID
+  if($self->{'_pid'} > 0)
+  {
+  	#The Process did not get a Process Status Code yet
+  	#and did not produce an Error
+  	$irng = 1 if($self->{'_process_status'} < 0 && $self->{'_error_code'} == 0);
+  }
 
 
   return $irng;
