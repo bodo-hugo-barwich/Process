@@ -5,7 +5,7 @@
 
 Name: perl-Process-SubProcess
 Version: 2.0
-Release: 20201002git19c8b0a
+Release: 20210208git6cbb456
 Summary: Perl Module for Multiprocessing
 License: see https://dev.perl.org/licenses/
 Group: 		Development/Libraries
@@ -35,16 +35,18 @@ rm -rf %{buildroot}
 
 rm -rf %{buildroot}
 
-mkdir -p %{buildroot}%{perl_vendorlib}
-mkdir -p %{buildroot}%{_docdir}/%{name}
-
-mv README.md %{buildroot}%{_docdir}/%{name}/
-mv etc %{buildroot}%{_docdir}/%{name}/
-mv t %{buildroot}%{_docdir}/%{name}/tests
-
 rm -f Makefile* *META* MANIFEST* cpanfile .travis*
 rm -fR .github
 find ./ -type f -name '.gitignore' -exec rm -f {} \;
+rm -fR docs/src
+
+mkdir -p %{buildroot}%{perl_vendorlib}
+mkdir -p %{buildroot}%{_docdir}
+
+mv docs %{buildroot}%{_docdir}/%{name}
+mv README.md %{buildroot}%{_docdir}/%{name}/
+mv etc %{buildroot}%{_docdir}/%{name}/
+mv t %{buildroot}%{_docdir}/%{name}/tests
 
 mv lib/Process %{buildroot}%{perl_vendorlib}/
 
@@ -55,6 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %doc %{_docdir}/%{name}/README.md
+%doc %{_docdir}/%{name}/Process.jpg
 %{perl_vendorlib}/Process
 %dir %{_docdir}/%{name}
 %{_docdir}/%{name}/etc
