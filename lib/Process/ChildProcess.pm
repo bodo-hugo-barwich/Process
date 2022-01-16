@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-=pod
 # @author Bodo (Hugo) Barwich
 # @version 2018-06-14
 # @package SubProcess Management
@@ -17,7 +16,6 @@
 # Features:
 # - Sub Process Execution Time Out
 #
-=cut
 
 
 

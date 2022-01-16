@@ -5,3 +5,6 @@
 .travis.yml
 MANIFEST.bak
 MANIFEST.SKIP
+docs/src
+etc/rpm
+etc/debian

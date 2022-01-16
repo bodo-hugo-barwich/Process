@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+# You must remove unused comment lines for the released package.
+export DH_VERBOSE=1
+
+
+
+PKGNAME := $(shell dpkg-parsechangelog -SSource)
+INSTALLPREFIX := $(shell perl '-V:install.*' | grep -iE '^installprefix=' | cut -d= -f2 | cut -d"'" -f2 )
+PERLVENDORLIB := $(shell perl '-V:install.*' | grep -iE '^installvendorlib=' | cut -d= -f2 | cut -d"'" -f2 )
+
+
+override_dh_auto_clean: 
+	rm -fR debian/$(PKGNAME)/	
+	dh_auto_clean
+	
+
+%:
+	dh $@  
+
+override_dh_auto_configure: 
+	perl Makefile.PL INSTALLDIRS=perl INSTALLPRIVLIB=$(PERLVENDORLIB) 
+
+override_dh_auto_install:
+	dh_auto_install --
+	rm -fR debian/$(PKGNAME)/usr/lib/perl5/x86_64-linux-gnu-thread-multi/
+
+#override_dh_install:
+#	dh_install --list-missing -X.pyc -X.pyo
+
+override_dh_usrlocal:
+	rm -fR debian/$(PKGNAME)/usr/local/lib/
+
+#override_dh_prep: 
+#	rm -fR debian/$(PKGNAME)/usr/local/lib/x86_64-linux-gnu/perl/5.32.1/auto/
+#	dh_prep --
+
