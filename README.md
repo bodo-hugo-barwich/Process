@@ -2,10 +2,10 @@
 [![Build Status](https://travis-ci.com/bodo-hugo-barwich/Process.svg?branch=master)](https://travis-ci.com/bodo-hugo-barwich/Process)
 
 # Process
-Process::SubProcess - Perl Module for Multiprocessing 
+Process::SubProcess - Perl Module for Multiprocessing
 
 Running Sub Processes in an easy way while reading STDOUT, STDERR, Exit Code and possible System Errors. \
-It also implements running multiple Sub Processes simultaneously while keeping all Report and Error Messages and Exit Codes 
+It also implements running multiple Sub Processes simultaneously while keeping all Report and Error Messages and Exit Codes
 seperate.
 
 # Features
@@ -21,7 +21,7 @@ This Module was conceived out of the need to launch multiple Tasks simulaneously
 As I developed it as Prototype at:
 [Multi Process Manager](https://stackoverflow.com/questions/50177534/why-do-pipes-from-child-processes-break-sometimes-and-sometimes-not)\
 The **Object Oriented Design** permits the implementation of the **[Command Pattern / Manager-Worker Pattern](https://en.wikipedia.org/wiki/Command_pattern)** with the `Process::SubProcess::Group` and `Process::SubProcess::Pool` Packages.\
-Having a similar implementation as the [`Capture::Tiny` Package](https://metacpan.org/pod/Capture::Tiny) it eventually evolved as a Procedural Replacement for the `Capture::Tiny::capture()` Function. 
+Having a similar implementation as the [`Capture::Tiny` Package](https://metacpan.org/pod/Capture::Tiny) it eventually evolved as a Procedural Replacement for the `Capture::Tiny::capture()` Function.
 
 ## Example Use Case
 The Usefulness of this Library is best shown by an Example Use Case as seen in the `Process::SubProcess::Group::Run` Test Sequence:\
@@ -130,6 +130,7 @@ done_testing();
 
 # Documentation
 The Class Diagramm kann be found at:\
-[Class Diagram for the Package 'Process'](docs/Process.jpg)
+[Class Diagram for the Package 'Process'](docs/Process.jpg)\
+![Class Diagram for the Package 'Process'](docs/Process.jpg)
 
 

@@ -8,3 +8,5 @@ MANIFEST.SKIP
 docs/src
 etc/rpm
 etc/debian
+*.tdy
+*.save
