@@ -1,13 +1,13 @@
 cpanfile
+docs/Process.jpg
 lib/Process/ChildProcess.pm
 lib/Process/ChildProcessExecutable.pm
 lib/Process/SubProcess.pm
 lib/Process/SubProcess/Group.pm
 lib/Process/SubProcess/Pool.pm
-Makefile.PL
+LICENSE
 MANIFEST			This list of files
 README.md
-docs/Process.jpg
 t/exception_script.pl
 t/nobashbang_script.pl
 t/noexec_script.pl
