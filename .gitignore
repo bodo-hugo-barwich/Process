@@ -1,9 +1,14 @@
 #Project Files
 .project
 .includepath
+*.tdy
+*.save
 
 #Packaging Files
+MYMETA.*
 MANIFEST.bak
+Makefile
 pm_to_blib
 blib
 blib/**
+*.tar.gz

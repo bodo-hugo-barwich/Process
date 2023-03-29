@@ -10,29 +10,23 @@
 #
 #---------------------------------
 # Requirements:
-# - The Perl Package "perl-Data-Dump" must be installed 
+# - The Perl Package "perl-Data-Dump" must be installed
 #
 #---------------------------------
 # Features:
 # - Sub Process Execution Time Out
 #
 
-
-
 #==============================================================================
 # The ChildProcessExecutable Package
-
 
 package ChildProcessExecutable;
 
 #----------------------------------------------------------------------------
 #Dependencies
 
-
-
 #----------------------------------------------------------------------------
 #Constructors
-
 
 sub new {
     my $invocant = shift;
@@ -57,11 +51,8 @@ sub new {
     return $self;
 }
 
-
-
 #----------------------------------------------------------------------------
 #Administration Methods
-
 
 sub setExecute {
     my $self   = shift;
@@ -85,11 +76,8 @@ sub setExecute {
 sub Execute {
 }
 
-
-
 #----------------------------------------------------------------------------
 #Consultation Methods
-
 
 sub getExecute {
     my $self   = shift;
@@ -122,7 +110,5 @@ sub getErrorString {
     return $self->{"_error_message"};
 }
 
-
 return 1;
-
 
