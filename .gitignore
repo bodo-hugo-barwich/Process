@@ -1,6 +1,8 @@
 #Project Files
 .project
+.settings
 .includepath
+.vscode
 *.tdy
 *.save
 

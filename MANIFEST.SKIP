@@ -1,7 +1,9 @@
 .git
 .github
-.includepath
 .project
+.settings
+.includepath
+.vscode
 .travis.yml
 \.tdy$
 \.save$
