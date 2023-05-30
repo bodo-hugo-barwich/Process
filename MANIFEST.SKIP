@@ -5,8 +5,8 @@
 .includepath
 .vscode
 .travis.yml
-\.tdy$
-\.save$
+\.tdy
+\.save
 MANIFEST.bak
 MANIFEST.SKIP
 docs/src

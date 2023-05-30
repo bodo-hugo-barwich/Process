@@ -24,11 +24,14 @@ jobs:
     steps:
        # List all installed Perl Libraries
       - name: List all installed Perl Libraries
-        run: dpkg --get-selections | grep -i perl | sort
+        run: |
+          dpkg --get-selections | grep -i perl | sort
+          echo "Perl Version:"
+          perl --version
         
       # Install missing Perl Libraries
       - name: Install Capture::Tiny Library
-        run: sudo apt-get update && sudo apt-get install libcapture-tiny-perl libdata-dump-perl
+        run: sudo apt-get update && sudo apt-get install perlbrew libcapture-tiny-perl libdata-dump-perl
         
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
