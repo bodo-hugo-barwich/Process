@@ -29,57 +29,59 @@ Having 3 Jobs at hand of 2 seconds, 3 seconds and 1 second running them sequenci
 But using the `Process::SubProcess::Group` it takes effectively only **3 seconds** to complete.\
 And still each Job can be evaluated separately by their own Results keeping Log Message separate from Error Messages and viewing them in their context.
 ```
-Test: 'Process::SubProcess::Group::Run' do ...
-ok 3 - scripts (count: '3'): added correctly
-Process Group Execution Start - Time Now: '1600376190.83796' s
-ok 4 - Process Group Execution: Execution correct
-Process Group Execution End - Time Now: '1600376193.88415' s
-Process Group Execution finished in '3046.19097709656' ms
-ok 5 - Process No. '0': Listed correctly
-Process (2763) 'test-script:2s':
+# Subtest: Process::SubProcess::Group::Run
+    ok 1 - scripts (count: '3'): added correctly
+Process Group Execution Start - Time Now: '1688542787.31262' s
+    ok 2 - Process Group Execution: Execution correct
+Process Group Execution End - Time Now: '1688542790.33528' s
+Process Group Execution finished in '3022.66407012939' ms
+    ok 3 - Process No. '0': Listed correctly
+Process (8608) 'test-script:2s':
 ERROR CODE: '0'
 EXIT CODE: '0'
-STDOUT: 'Start - Time Now: '1600376190.8788' s
+STDOUT: 'Start - Time Now: '1688542787.33535' s
 script 'test_script.pl' START 0
 script 'test_script.pl' PAUSE '2' ...
 script 'test_script.pl' END 1
-End - Time Now: '1600376192.87905' s
-script 'test_script.pl' done in '2000.25105476379' ms
+End - Time Now: '1688542789.33552' s
+script 'test_script.pl' done in '2000.16403198242' ms
 script 'test_script.pl' EXIT '0'
 '
 STDERR: 'script 'test_script.pl' START 0 ERROR
 script 'test_script.pl' END 1 ERROR
 '
-ok 6 - Process No. '1': Listed correctly
-Process (2764) 'test-script:3s':
+    ok 4 - Process No. '1': Listed correctly
+Process (8609) 'test-script:3s':
 ERROR CODE: '0'
 EXIT CODE: '0'
-STDOUT: 'Start - Time Now: '1600376190.88212' s
+STDOUT: 'Start - Time Now: '1688542787.3336' s
 script 'test_script.pl' START 0
 script 'test_script.pl' PAUSE '3' ...
 script 'test_script.pl' END 1
-End - Time Now: '1600376193.88235' s
-script 'test_script.pl' done in '3000.22411346436' ms
+End - Time Now: '1688542790.3338' s
+script 'test_script.pl' done in '3000.19979476929' ms
 script 'test_script.pl' EXIT '0'
 '
 STDERR: 'script 'test_script.pl' START 0 ERROR
 script 'test_script.pl' END 1 ERROR
 '
-ok 7 - Process No. '2': Listed correctly
-Process (2765) 'test-script:1s':
+    ok 5 - Process No. '2': Listed correctly
+Process (8610) 'test-script:1s':
 ERROR CODE: '0'
 EXIT CODE: '0'
-STDOUT: 'Start - Time Now: '1600376190.88512' s
+STDOUT: 'Start - Time Now: '1688542787.34636' s
 script 'test_script.pl' START 0
 script 'test_script.pl' PAUSE '1' ...
 script 'test_script.pl' END 1
-End - Time Now: '1600376191.88534' s
-script 'test_script.pl' done in '1000.21886825562' ms
+End - Time Now: '1688542788.34656' s
+script 'test_script.pl' done in '1000.20098686218' ms
 script 'test_script.pl' EXIT '0'
 '
 STDERR: 'script 'test_script.pl' START 0 ERROR
 script 'test_script.pl' END 1 ERROR
 '
+    1..5
+ok 3 - Process::SubProcess::Group::Run
 ```
 
 # Usage
@@ -91,39 +93,47 @@ use Process::SubProcess qw(runSubProcess);
 use Test::More;
 
 
-my $stestscript = "test_script.pl";
 my $spath = '/path/to/test/script/';
+my $stestscript = 'test_script.pl';
+my $itestpause = 3;
+my $iteststatus = 4;
 
 my $rscriptlog = undef;
 my $rscripterror = undef;
 my $iscriptstatus = -1;
+my $irunok = -1;
 
 
-#Execute the Command
-($rscriptlog, $rscripterror, $iscriptstatus) = runSubProcess($spath . $stestscript);
+subtest 'runSubProcess() Function' => sub {
 
-#Evaluate the Results
+  #Execute the Command
+  ($rscriptlog, $rscripterror, $iscriptstatus)
+    = runSubProcess("${spath}${stestscript} $itestpause $iteststatus");
 
-isnt($rscriptlog, undef, "STDOUT Ref is returned");
-isnt($rscripterror, undef, "STDERR Ref is returned");
-isnt($iscriptstatus, undef, "EXIT CODE is returned");
-ok($iscriptstatus =~ qr/^-?\d$/, "EXIT CODE is numeric");
+  #Evaluate the Results
 
-print("EXIT CODE: '$iscriptstatus'\n");
+  isnt($rscriptlog, undef, "STDOUT Ref is returned");
+  isnt($rscripterror, undef, "STDERR Ref is returned");
+  isnt($iscriptstatus, undef, "EXIT CODE is returned");
+  ok($iscriptstatus =~ qr/^-?\d$/, "EXIT CODE is numeric");
+  is($iscriptstatus, $iteststatus, 'EXIT CODE is correct');
 
-if(defined $rscriptlog)
-{
-  isnt($$rscriptlog, '', "STDOUT was captured");
+  print("EXIT CODE: '$iscriptstatus'\n");
 
-  print("STDOUT: '$$rscriptlog'\n");
-} #if(defined $rscriptlog)
+  if(defined $rscriptlog)
+  {
+    isnt($$rscriptlog, '', "STDOUT was captured");
 
-if(defined $rscripterror)
-{
-  isnt($$rscripterror, '', "STDERR was captured");
+    print("STDOUT: '$$rscriptlog'\n");
+  } #if(defined $rscriptlog)
 
-  print("STDERR: '$$rscripterror'\n");
-} #if(defined $rscripterror)
+  if(defined $rscripterror)
+  {
+    isnt($$rscripterror, '', "STDERR was captured");
+
+    print("STDERR: '$$rscripterror'\n");
+  } #if(defined $rscripterror)
+};
 
 done_testing();
 ```
