@@ -41,14 +41,13 @@ jobs:
           package_version_res=`scripts/package_version.pl`
           echo -e "$package_version_res"
           if [ -z "$package_version_res" ]; then echo "could not find PACKAGE VERSION"; exit 1; fi;
-          package_name=`echo "$package_version_res" | cut -d"=" -f2 | cut -d"@" -f1`
+          package_name=`echo "$package_version_res" | cut -d"=" -f1 | cut -d"@" -f1`
+          package_version=`echo "$package_version_res" | cut -d"=" -f2 | cut -d"@" -f1`
           version_commit=`echo "$package_version_res" | cut -d"=" -f2 | cut -d"@" -f2`
           version_tag="v$package_version"          
-          version_filename=`echo "$version_tag" | tr '.' '-'`
           echo "package=$package_name" >> $GITHUB_OUTPUT
           echo "version=$version_tag" >> $GITHUB_OUTPUT
           echo "version_commit=$version_commit" >> $GITHUB_OUTPUT
-          echo "version_filename=$version_filename" >> $GITHUB_OUTPUT
           
       - name: Check Repository for Package Version Tag
         id: git_tag
