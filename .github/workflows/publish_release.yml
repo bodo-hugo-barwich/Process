@@ -54,7 +54,7 @@ jobs:
         id: git_tag
         run: |
           git fetch --tags
-          tag_label=`git tag -l "${{ steps.cargo_version.outputs.version }}"`
+          tag_label=`git tag -l "${{ steps.package_version.outputs.version }}"`
           if [ -z $tag_label ]; then tag_exists=0; else tag_exists=1; fi;
           echo "git - tag: '$tag_label'; exists: '$tag_exists'"
           echo "tag=$tag_label" >> $GITHUB_OUTPUT
