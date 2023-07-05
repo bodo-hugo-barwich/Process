@@ -105,6 +105,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_RELEASE_TOKEN }}       
                       
+#          if [ $duplicated -ne 1 ]; then exit $publish_res ; fi;
       - name: CPAN Publish
         id: publish
         if: steps.git_tag.outputs.exists == 0
@@ -117,6 +118,5 @@ jobs:
           cat cpan-upload.log
           echo "CPAN Upload Error:"
           cat cpan-upload_error.log
-          if [ $duplicated -ne 1 ]; then exit $publish_res ; fi;
           
         
