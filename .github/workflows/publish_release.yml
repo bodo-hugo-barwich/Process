@@ -106,17 +106,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_RELEASE_TOKEN }}       
                       
+#          if [ $duplicated -ne 1 ]; then exit $publish_res ; fi;
       - name: CPAN Publish
         id: publish
         if: steps.git_tag.outputs.exists == 0
         run: |
           echo "${{ secrets.PAUSE_LOGIN }}" > ~/.pause
-          cpan-upload ${{ steps.build_release.outputs.file }} 2>cpan-upload_error.log > cpan-upload.log ; echo "Exit Code: '$?'" >> cpan-upload.log || true
+          cpan-upload ${{ steps.build_release.outputs.file }} 2>cpan-upload_error.log > cpan-upload.log ; echo "Exit Code: '$?'" >> cpan-upload.log
           publish_res=$? ; (exit 0)
           duplicated=`cat cpan-upload_error.log | grep -i "Conflict" | wc -l`
           echo "CPAN Upload Report:"
           cat cpan-upload.log
           echo "CPAN Upload Error:"
           cat cpan-upload_error.log
-          if [ $duplicated -ne 1 ]; then exit $publish_res ; fi;
         
