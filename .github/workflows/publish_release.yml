@@ -112,7 +112,7 @@ jobs:
         run: |
           echo "${{ secrets.PAUSE_LOGIN }}" > ~/.pause
           cpan-upload ${{ steps.build_release.outputs.file }} 2>cpan-upload_error.log > cpan-upload.log ; echo "Exit Code: '$?'" >> cpan-upload.log || true
-          publish_res=$?
+          publish_res=$? ; (exit 0)
           duplicated=`cat cpan-upload_error.log | grep -i "Conflict" | wc -l`
           echo "CPAN Upload Report:"
           cat cpan-upload.log
