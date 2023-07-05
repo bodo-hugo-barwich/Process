@@ -21,14 +21,18 @@ use Git;
 # Auxiliary Functions
 
 sub git_history {
-    my ( $module_name, $git ) = @_;
+    my ( $module_name, $maindir ) = @_;
     my %history_result = ( 'success' => 1, 'commits' => [] );
 
     my @log_lines  = ();
     my $commit     = undef;
     my $commit_idx = 0;
 
-    eval { $git->command( 'log', '-50' ); };
+    eval {
+        my $repo = Git->repository( Repository => $maindir . '/.git' );
+
+        @log_lines = $repo->command( 'log', '-50' );
+    };
 
     if ($@) {
         print STDERR
@@ -40,6 +44,8 @@ sub git_history {
 
         $history_result{'success'} = 0;
     }
+
+    $history_result{'success'} = 0 if ( scalar @log_lines == 0 );
 
     foreach my $line (@log_lines) {
         if ( $line =~ qr/^commit (.*)$/i ) {
@@ -131,13 +137,13 @@ GetOptions(
 );
 @rqcommits = @ARGV;
 
-@rqcommits = map { index($_, '^') == 0 ? substr( $_, 1, length($_) - 1 ) : $_ } @rqcommits;
+@rqcommits =
+  map { index( $_, '^' ) == 0 ? substr( $_, 1, length($_) ) : $_ } @rqcommits;
 @rqcommits = map { length($_) > 7 ? substr( $_, 0, 7 ) : $_ } @rqcommits;
 
-my $repo        = Git->repository( Directory => '.git' );
 my %commits_res = ();
 
-my $history_result = git_history( $module_file, $repo );
+my $history_result = git_history( $module_file, $maindir->stringify );
 
 my %history_commits = map { $_->{'hash_short'} => $_ }
   grep { defined $_->{'hash_short'} } @{ $history_result->{'commits'} };
