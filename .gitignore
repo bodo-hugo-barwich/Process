@@ -1,5 +1,6 @@
 #Project Files
 .project
+.pydevproject
 .settings
 .includepath
 .vscode
@@ -10,7 +11,9 @@
 MYMETA.*
 MANIFEST.bak
 Makefile
+Makefile.old
 pm_to_blib
 blib
 blib/**
 *.tar.gz
+*.log

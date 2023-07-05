@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2023-05-30
+# @version 2023-06-27
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -44,7 +44,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.0.2';
+our $VERSION = '2.0.3';
 
 =head1 DESCRIPTION
 
@@ -77,13 +77,13 @@ use constant FLAG_ANYOUT => 3;
 
 This creates adhoc an C<Process::SubProcess> Object and runs the command given as string.
 
-C<COMMAND> - is a single scalar parameter will be interpreted as command to execute
+C<COMMAND> - is a single scalar parameter will be interpreted as command to executed
 without any additional options.
 
 C<OPTIONS> - are passed in a hash like fashion, using key and value pairs.
 Combining the command with additional C<OPTIONS> also requires the hash key C<command> to be set.
 
-See L<Method C<setArrProcess()>>
+See L<Method C<setArrProcess()>|setArrProcess ( CONFIGURATIONS )>
 
 =back
 
@@ -145,7 +145,7 @@ B<Parameters:>
 
 C<CONFIGURATIONS> are passed in a hash like fashion, using key and value pairs.
 
-See L<Method C<setArrProcess()>>
+See L<Method C<setArrProcess()>|setArrProcess ( CONFIGURATIONS )>
 
 =back
 
@@ -243,11 +243,11 @@ If the process is expected to run longer it is useful to set it to avoid excessi
 It is also important for multiple process execusions, because other processes will not
 be checked before the read has not timed out.
 
-See L<Method C<setName()>>
+See L<Method C<setName()>|setName ( NAME )>
 
-See L<Method C<setCommand()>>
+See L<Method C<setCommand()>|setCommand ( COMMAND )>
 
-See L<Method C<setReadTimeout()>>
+See L<Method C<setReadTimeout()>|setReadTimeout ( TIMEOUT )>
 
 =back
 
@@ -305,11 +305,12 @@ sub set {
 
 This Method will asign a Name to the process.
 
+This is useful when there are several processes with the same command running and
+a more prettier readable name is desired.
+
 B<Parameters:>
 
 C<NAME> - is a string that will be assigned as the process name.
-This is useful when there are several processes with the same command running and
-a more prettier readable name is desired.
 
 =back
 
@@ -335,6 +336,10 @@ sub setName {
 This method sets the C<COMMAND> property as string that represents the command to be executed.
 
 It can only be set when the Sub Process is not running.
+
+B<Parameters:>
+
+C<COMMAND> - is a single scalar parameter that will be interpreted as command to executed
 
 See L<Method C<Launch()>>
 
@@ -371,7 +376,7 @@ It is also important for multiple process execusions, because other processes wi
 be checked before the read has not timed out.
 It can only be set when the Sub Process is not running.
 
-See L<Method C<Launch()>>
+See L<Method C<Launch()>|Launch ()>
 
 =back
 
@@ -501,10 +506,10 @@ Property.
 Per default this the process runs asynchronously. The L<Wait()> method is used to
 monitor its execution and read its outputs
 
-B<Returns:> It returns C< 1 > when the indices and aliases are created and verified as correct.
-Otherwise it returns C< 0 >.
+B<Returns:> It returns C< 1 > when the process was launched correctly.
+otherwise it returns C< 0 >.
 
-See L<Method C<Wait()>>
+See L<Method C<Check()>|Check ()>
 
 =back
 
@@ -658,6 +663,24 @@ sub Launch {
 
     return $irs;
 }
+
+=pod
+
+=over 4
+
+=item Check ()
+
+This method checks whether the process is finished and calls the C<Read()> method to
+read its output.
+
+B<Returns:> It returns C< 1 > when the process is still running
+otherwise it returns C< 0 >.
+
+See L<Method C<Launch()>|Launch ()>
+
+=back
+
+=cut
 
 sub Check {
     my $self = $_[0];
@@ -818,8 +841,9 @@ sub Check {
         {
             if ( $self->{"_process_status"} < 0 ) {
 
-      #------------------------
-      #The Child Process ID was captured but no Process Status Code was captured
+					      #------------------------
+					      # The Child Process ID was captured
+					      # but no Process Status Code was captured
 
                 $self->{"_error_message"} .=
                   "Sub Process ${sprcnm}: Process does not exist.\n";

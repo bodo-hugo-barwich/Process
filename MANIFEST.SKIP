@@ -12,6 +12,7 @@ MANIFEST.SKIP
 docs/src
 etc/rpm
 etc/debian
+scripts
 blib
 pm_to_blib
 Makefile
