@@ -131,6 +131,7 @@ GetOptions(
 );
 @rqcommits = @ARGV;
 
+@rqcommits = map { index($_, '^') == 0 ? substr( $_, 1, length($_) - 1 ) : $_ } @rqcommits;
 @rqcommits = map { length($_) > 7 ? substr( $_, 0, 7 ) : $_ } @rqcommits;
 
 my $repo        = Git->repository( Directory => '.git' );
