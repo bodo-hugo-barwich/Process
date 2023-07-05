@@ -108,7 +108,7 @@ jobs:
                       
 #          if [ $duplicated -ne 1 ]; then exit $publish_res ; fi;
 
-#          cpan-upload -v 2>cpan-upload_error.log > cpan-upload.log ; echo "Exit Code: '$?'" >> cpan-upload.log || true
+#          cpan-upload -v ${{ steps.build_release.outputs.file }} 2>cpan-upload_error.log > cpan-upload.log ; echo "Exit Code: '$?'" >> cpan-upload.log || true
 #          publish_res=$?
 #          duplicated=`cat cpan-upload_error.log | grep -i "already uploaded" | wc -l`
 #          echo "CPAN Upload Report:"
@@ -120,6 +120,6 @@ jobs:
         if: steps.git_tag.outputs.exists == 0
         run: |
           echo "${{ secrets.PAUSE_LOGIN }}" > ~/.pause
-          cpan-upload -v 
+          cpan-upload -v ${{ steps.build_release.outputs.file }}
           
         
