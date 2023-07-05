@@ -88,6 +88,10 @@ jobs:
           make manifest
           make distcheck
           make dist 2>make-dist_error.log > make-dist.log ; echo "Exit Code: '$?'" >> make-dist.log
+          echo "Build Release Report:"
+          cat make-dist.log
+          echo "Build Release Error:"
+          cat make-dist_error.log
           dist_file=`cat make-dist.log | grep -i "created" | cut -d" " -f2`
           echo "file=$dist_file" >> $GITHUB_OUTPUT
           
