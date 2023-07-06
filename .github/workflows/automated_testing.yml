@@ -31,8 +31,10 @@ jobs:
         
       # Install missing Perl Libraries
       - name: Install Capture::Tiny Library
-        run: sudo apt-get update && sudo apt-get install perlbrew libcapture-tiny-perl libdata-dump-perl libpath-tiny-perl libcpanel-json-xs-perl libjson-xs-perl libjson-perl\
-          libyaml-xs-perl libyaml-perl libgetopt-long-descriptive-perl
+        run: |
+          sudo apt-get update && 
+          sudo apt-get -y install perlbrew libgetopt-long-descriptive-perl libcapture-tiny-perl libdata-dump-perl libpath-tiny-perl
+          sudo apt-get -y install libcpanel-json-xs-perl libjson-xs-perl libjson-perl libyaml-xs-perl libyaml-perl
         
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2

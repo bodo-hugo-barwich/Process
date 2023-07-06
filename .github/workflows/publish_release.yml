@@ -30,10 +30,11 @@ jobs:
       - name: Install Perl Dependencies
         run: | 
           perl --version
-          sudo apt-get update && sudo apt-get -y install git libpath-tiny-perl libcpanel-json-xs-perl libjson-xs-perl libjson-perl libdata-dump-perl libcpan-uploader-perl\
-          libgetopt-long-descriptive-perl
-        
-      
+          sudo apt-get update 
+          sudo apt-get -y install git libgetopt-long-descriptive-perl libcpan-uploader-perl libpath-tiny-perl
+          sudo apt-get -y install libcpanel-json-xs-perl libjson-xs-perl libjson-perl libdata-dump-perl
+          
+                
       - name: Checkout
         uses: actions/checkout@v2
           
