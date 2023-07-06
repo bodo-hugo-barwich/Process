@@ -85,6 +85,33 @@ ok 3 - Process::SubProcess::Group::Run
 ```
 
 # Usage
+## Runner Script
+The new **Runner Script** `run_subprocess.pl` lets process the output of different commandline tools
+in a organised manner and parse it correctly into _JSON_, _YAML_ or _Plain Text_ formats:
+```plain
+$ bin/run_subprocess.pl -n "test-script fails" -c "t/test_script.pl 2 6" -f json | jq '.'
+{
+  "stdout": "Start - Time Now: '1688630328.73393' s\nscript 'test_script.pl' START 0\nscript 'test_script.pl' PAUSE '2' ...\nscript 'test_script.pl' END 1\nEnd - Time Now: '1688630330.73409' s\nscript 'test_script.pl' done in '2000.15306472778' ms\nscript 'test_script.pl' EXIT '6'\n",
+  "name": "test-script fails",
+  "error_code": 1,
+  "stderr": "script 'test_script.pl' START 0 ERROR\nscript 'test_script.pl' END 1 ERROR\n",
+  "exit_code": 6,
+  "command": "t/test_script.pl 2 6",
+  "pid": "7273"
+}
+```
+```plain
+$ bin/run_subprocess.pl -n "test-script fails" -c "t/test_script.pl 2 6" -f json | jq '.error_code,.exit_code'
+1
+6
+```
+```plain
+$ bin/run_subprocess.pl -n "test-script fails" -c "t/test_script.pl 2 6" -f json | jq '.stderr,.exit_code,.error_code'
+"script 'test_script.pl' START 0 ERROR\nscript 'test_script.pl' END 1 ERROR\n"
+6
+1
+```
+
 ## runSubProcess() Function
 Demonstrating the `runSubProcess()` Function Use Case:
 ```perl

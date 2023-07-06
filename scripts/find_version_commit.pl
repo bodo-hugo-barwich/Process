@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2023-06-27
+# @version 2023-07-05
 # @package Process::SubProcess
 # @subpackage scripts/find_version_commit.pl
 

@@ -1,3 +1,7 @@
+requires 'Getopt::Long::Descriptive';
+requires 'Path::Tiny';
+requires 'JSON';
+requires 'YAML';
 requires 'Data::Dump';
 
 on 'test' => sub {
