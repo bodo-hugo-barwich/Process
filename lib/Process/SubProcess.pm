@@ -1274,7 +1274,7 @@ See L<Method C<Launch()>|/"Launch ()">
 =cut
 
 sub getProcessID {
-    return $_->{"_pid"};
+    return $_[0]->{"_pid"};
 }
 
 =pod
@@ -1295,7 +1295,7 @@ See L<Method C<setName()>|/"setName ( NAME )">
 =cut
 
 sub getName {
-    return $_->{"_name"};
+    return $_[0]->{"_name"};
 }
 
 sub getNameComplete {
