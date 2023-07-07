@@ -44,7 +44,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.1.0';
+our $VERSION = '2.1.1';
 
 =head1 DESCRIPTION
 
@@ -1037,7 +1037,7 @@ sub Read {
 
 =over 4
 
-=item Read ()
+=item Wait ()
 
 This method calls the C<Check()> method continuously for a started process
 which was started with the C<Launch()> method until the C<Check()> method tells that
@@ -1048,7 +1048,7 @@ terminate the process after the C<TIMEOUT> is fulfilled.
 When a process times out an B<Error Code> of C< 4 > will be set.
 
 B<Returns:> It returns C< 1 > when the process has finished correctly.
-It returns C< 0 > when the process hat to be terminated.
+It returns C< 0 > when the process had to be terminated.
 
 See L<Method C<Check()>|/"Check ()">
 
@@ -1136,6 +1136,26 @@ sub Wait {
 
     return $irs;
 }
+
+=pod
+
+=over 4
+
+=item Run ()
+
+This method starts the process calling the C<Launch()> method and then calls
+the C<Wait()> method to wait until the process is finished.
+
+B<Returns:> It returns C< 1 > when the process was started and finished correctly.
+It returns C< 0 > when the process could not be started or had to be terminated.
+
+See L<Method C<Launch()>|/"Launch ()">
+
+See L<Method C<Wait()>|/"Wait ()">
+
+=back
+
+=cut
 
 sub Run {
     my $self = $_[0];

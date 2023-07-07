@@ -9,6 +9,7 @@
 
 #Packaging Files
 MYMETA.*
+MANIFEST
 MANIFEST.bak
 Makefile
 Makefile.old
