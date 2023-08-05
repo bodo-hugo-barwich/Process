@@ -428,6 +428,8 @@ negative value C< -1 > will disable the Execution Timeout
 
 See L<Method C<Launch()>|/"Launch ()">
 
+See L<Method C<Terminate()>|/"Terminate ()">
+
 =back
 
 =cut
@@ -1199,7 +1201,12 @@ sub Run {
 This method sends a C<TERM> signal to the process if it is running.
 And then checks the process with the C<Check()> method.
 
+It is used by the B<EXECUTIONTIMEOUT> functionality to ensure that the process does not
+run longer than required.
+
 See L<Method C<Check()>|/"Check ()">
+
+See L<Method C<setTimeout()>|/"setTimeout ()">
 
 =back
 
