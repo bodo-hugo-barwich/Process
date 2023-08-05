@@ -1054,6 +1054,8 @@ See L<Method C<Check()>|/"Check ()">
 
 See L<Method C<Launch()>|/"Launch ()">
 
+See L<Method C<Terminate()>|/"Terminate ()">
+
 See L<Method C<setTimeout()>|/"setTimeout ( TIMEOUT )">
 
 =back
@@ -1187,6 +1189,22 @@ sub Run {
 
     return $irs;
 }
+
+=pod
+
+=over 4
+
+=item Terminate ()
+
+This method sends a C<TERM> signal to the process if it is running.
+And then checks the process with the C<Check()> method.
+
+See L<Method C<Check()>|/"Check ()">
+
+=back
+
+=cut
+
 
 sub Terminate {
     my $self   = $_[0];
