@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2023-06-27
+# @version 2023-08-05
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
 # This Module defines the Class to manage a Subprocess and read its Output and Errors
-# It forks the Main Process to execute the Sub Process Funcionality
+# It launches the Command with IPC::Open3
 #
 #---------------------------------
 # Requirements:
@@ -31,7 +31,8 @@ package Process::SubProcess;
 #----------------------------------------------------------------------------
 #Dependencies
 
-use Exporter 'import';    # gives you Exporter's import() method directly
+use version;
+use Exporter qw(import);    # gives you Exporter's import() method directly
 
 our @EXPORT_OK = qw(runSubProcess);    # symbols to export on request
 
@@ -44,7 +45,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.1.1';
+our $VERSION = '2.1.2';
 
 =head1 DESCRIPTION
 
@@ -58,8 +59,8 @@ for simultaneous execution of multiple Sub Processes while keeping the execution
 separated.
 
 =cut
-# =head1 OVERVIEW
 
+# =head1 OVERVIEW
 
 #----------------------------------------------------------------------------
 #Static Methods
@@ -1211,7 +1212,6 @@ See L<Method C<setTimeout()>|/"setTimeout ()">
 =back
 
 =cut
-
 
 sub Terminate {
     my $self   = $_[0];

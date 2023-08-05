@@ -31,7 +31,8 @@ jobs:
         run: | 
           perl --version
           sudo apt-get update 
-          sudo apt-get -y install git libgetopt-long-descriptive-perl libcpan-uploader-perl libpath-tiny-perl
+          sudo apt-get -y install git libextutils-makemaker-cpanfile-perl
+          sudo apt-get -y install libgetopt-long-descriptive-perl libcpan-uploader-perl libpath-tiny-perl
           sudo apt-get -y install libcpanel-json-xs-perl libjson-xs-perl libjson-perl libdata-dump-perl
           
                 
