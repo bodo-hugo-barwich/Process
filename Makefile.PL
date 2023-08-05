@@ -1,4 +1,4 @@
-use ExtUtils::MakeMaker;
+use ExtUtils::MakeMaker::CPANfile;
  
 
 
