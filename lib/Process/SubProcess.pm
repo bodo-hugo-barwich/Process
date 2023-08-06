@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2023-08-05
+# @version 2023-08-06
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -45,7 +45,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.1.2';
+our $VERSION = '2.1.3';
 
 =head1 DESCRIPTION
 

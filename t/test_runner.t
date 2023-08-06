@@ -150,7 +150,7 @@ subtest 'Runner JSON Result' => sub {
   ok($irunnerstatus =~ qr/^-?\d$/, "Runner EXIT CODE is numeric");
   is($irunnerstatus, 0, "Runner EXIT CODE '0' is correct");
 
-  $runnerresult = undef
+  $runnerresult = undef;
   $sscriptsummary = undef;
   $sscriptlog = undef;
   $scripterror = undef;
@@ -218,7 +218,7 @@ subtest 'Runner YAML Result' => sub {
   ok($irunnerstatus =~ qr/^-?\d$/, "Runner EXIT CODE is numeric");
   is($irunnerstatus, 0, "Runner EXIT CODE '0' is correct");
 
-  $runnerresult = undef
+  $runnerresult = undef;
   $sscriptsummary = undef;
   $sscriptlog = undef;
   $scripterror = undef;
