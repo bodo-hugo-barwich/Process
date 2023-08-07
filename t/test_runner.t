@@ -163,7 +163,7 @@ subtest 'Runner JSON Result' => sub {
   };
 
   if ($@) {
-  	fails("Runner Result is not valid JSON: $@");
+  	fail("Runner Result is not valid JSON: $@");
   }
 
   isnt($runnerresult, undef, "Runner Result is valid JSON");
@@ -231,7 +231,7 @@ subtest 'Runner YAML Result' => sub {
   };
 
   if ($@) {
-    fails("Runner Result is not valid YAML: $@");
+    fail("Runner Result is not valid YAML: $@");
   }
 
   isnt($runnerresult, undef, "Runner Result is valid YAML");
