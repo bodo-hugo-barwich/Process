@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2023-07-06
+# @version 2023-08-20
 # @package Test for the 'run_subprocess.pl' Runner Script
 # @subpackage t/test_runner.t
 
@@ -64,6 +64,7 @@ my $iprccnt = -1;
 my $iprctmoutcnt = -1;
 
 
+print "Perl Interpreter Path: '", $Config{perlpath}, "'\n";
 
 subtest 'Runner Script Usage' => sub {
 

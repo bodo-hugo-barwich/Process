@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
-# @version 2023-08-07
+# @version 2023-08-20
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
