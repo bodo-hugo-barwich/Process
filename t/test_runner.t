@@ -17,6 +17,7 @@
 use warnings;
 use strict;
 
+use Config;
 use Cwd qw(abs_path);
 
 use JSON qw(decode_json);
@@ -66,7 +67,7 @@ my $iprctmoutcnt = -1;
 
 subtest 'Runner Script Usage' => sub {
 
-  $srunnerresult = `${spath}${srunnerscript} -n "runner usage" -h`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "runner usage" -h`;
   $irunnerstatus = $?;
 
   isnt($srunnerresult, undef, "Runner Result is returned");
@@ -81,7 +82,7 @@ subtest 'Runner Plain Text Result' => sub {
   $itestpause = 1;
   $iteststatus = 4;
 
-  $srunnerresult = `${spath}${srunnerscript} -n "script exit code '4' - plain" -c "${spath}${stestscript} $itestpause $iteststatus"`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script exit code '4' - plain" -c "${spath}${stestscript} $itestpause $iteststatus"`;
   $irunnerstatus = $?;
 
   print("Runner Result:\n'$srunnerresult'\n");
@@ -140,7 +141,7 @@ subtest 'Runner JSON Result' => sub {
   $itestpause = 1;
   $iteststatus = 4;
 
-  $srunnerresult = `${spath}${srunnerscript} -n "script exit code '4' - json" -c "${spath}${stestscript} $itestpause $iteststatus" -f json`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script exit code '4' - json" -c "${spath}${stestscript} $itestpause $iteststatus" -f json`;
   $irunnerstatus = $?;
 
   print("Runner Result:\n'$srunnerresult'\n");
@@ -208,7 +209,7 @@ subtest 'Runner YAML Result' => sub {
   $itestpause = 1;
   $iteststatus = 4;
 
-  $srunnerresult = `${spath}${srunnerscript} -n "script exit code '4' - yaml" -c "${spath}${stestscript} $itestpause $iteststatus" -f yaml`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script exit code '4' - yaml" -c "${spath}${stestscript} $itestpause $iteststatus" -f yaml`;
   $irunnerstatus = $?;
 
   print("Runner Result:\n'$srunnerresult'\n");
@@ -277,7 +278,7 @@ subtest 'Runner Plain Text Boundary' => sub {
 
   $itestpause = 1;
 
-  $srunnerresult = `${spath}${srunnerscript} -n "script - plain boundary" -c "${spath}${stestscript} $itestpause" -b "$soutputboundary"`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script - plain boundary" -c "${spath}${stestscript} $itestpause" -b "$soutputboundary"`;
   $irunnerstatus = $?;
 
   print("Runner Result:\n'$srunnerresult'\n");
@@ -335,7 +336,7 @@ subtest 'Runner Timeout Error' => sub {
 
   $itestpause = 3;
 
-  $srunnerresult = `${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 2`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 2`;
   $irunnerstatus = $?;
 
   print("Runner Result:\n'$srunnerresult'\n");
@@ -395,7 +396,7 @@ subtest 'Runner Exit Code' => sub {
 	  $itestpause = 1;
 	  $iteststatus = 6;
 
-	  $srunnerresult = `${spath}${srunnerscript} -n "script - exit code" -c "${spath}${stestscript} $itestpause $iteststatus" -x`;
+	  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script - exit code" -c "${spath}${stestscript} $itestpause $iteststatus" -x`;
 	  $irunnerstatus = ( $? >> 8 );
 
 	  print("Runner Result:\n'$srunnerresult'\n");
@@ -451,7 +452,7 @@ subtest 'Runner Exit Code' => sub {
   subtest 'Runner returns Error Code' => sub {
     $itestpause = 4;
 
-    $srunnerresult = `${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 1 -x`;
+    $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 1 -x`;
     $irunnerstatus = ( $? >> 8 );
 
     print("Runner Result:\n'$srunnerresult'\n");

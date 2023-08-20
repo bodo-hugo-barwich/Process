@@ -1,4 +1,4 @@
-#!perl
+#!/usr/bin/perl
 
 # @author Bodo (Hugo) Barwich
 # @version 2023-07-06
