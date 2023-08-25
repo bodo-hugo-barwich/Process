@@ -1,3 +1,4 @@
+#---------------------------------
 # @author Bodo (Hugo) Barwich
 # @version 2023-08-25
 # @package SubProcess Management
@@ -28,7 +29,7 @@ BEGIN {
 
 =head1 NAME
 
-Process::SubProcess::Group - Module to manage and run several Sub Processes at once
+Process::SubProcess::Group - Module to manage and run multiple Sub Processes at once
 
 =cut
 
@@ -45,8 +46,8 @@ use Process::SubProcess;
 
 =head1 DESCRIPTION
 
-C<Process::SubProcess::Group> implements a Class to manage several Sub Process at once
-and keep their Output and Errors related to each command.
+C<Process::SubProcess::Group> implements a class to manage multiple Sub Process
+and run them at once while keeping their Output and Errors related to each command.
 
 The Idea of this API is to launch Sub Processes and keep track of all Output
 on C<STDOUT>, C<STDERR>, the C<EXIT CODE> and possible System Errors at Launch Time
