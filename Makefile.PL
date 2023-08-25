@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 use ExtUtils::MakeMaker::CPANfile;
+=======
+use ExtUtils::MakeMaker;
+ 
+
+>>>>>>> refs/heads/master
 
 WriteMakefile(
     NAME          => 'Process::SubProcess',
@@ -9,6 +15,7 @@ WriteMakefile(
 
     # VERSION     => '2.0.2',
     MIN_PERL_VERSION => '5.010',
+<<<<<<< HEAD
     test             => { TESTS => 't/*.t' },
     BUILD_REQUIRES   => {
         'ExtUtils::MakeMaker' => '6.46',
@@ -24,6 +31,16 @@ WriteMakefile(
         'YAML'                      => '0',
         'Data::Dump'                => '0',
     },
+=======
+    test             => {TESTS => 't/*.t'},
+	  PREREQ_PM => {
+	    'Getopt::Long::Descriptive' => '0',
+	    'Path::Tiny' => '0',
+	    'JSON' => '0',
+	    'YAML' => '0',
+	    'Data::Dump' => '0',
+	  },
+>>>>>>> refs/heads/master
     META_MERGE => {
         'meta-spec' => { version => 2 },
         resources   => {
