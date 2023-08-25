@@ -44,7 +44,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.1.4';
+our $VERSION = '2.1.5';
 
 =head1 DESCRIPTION
 
