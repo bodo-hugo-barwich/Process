@@ -1,7 +1,5 @@
-#!/usr/bin/perl
-
 # @author Bodo (Hugo) Barwich
-# @version 2023-08-05
+# @version 2023-08-25
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -22,7 +20,7 @@
 
 =head1 NAME
 
-Process::SubProcess - Library to manage Sub Processes as Objects
+Process::SubProcess - Library to manage Sub Processes as objects
 
 =cut
 
@@ -49,7 +47,7 @@ our $VERSION = '2.1.2';
 
 =head1 DESCRIPTION
 
-C<Process::SubProcess> implements a Class to manage a Sub Process and read its Output and Errors
+C<Process::SubProcess> implements a class to manage a Sub Process and read its Output and Errors
 
 The Idea of this API is to launch Sub Processes and keep track of all Output
 on C<STDOUT>, C<STDERR>, the C<EXIT CODE> and possible System Errors at Launch Time
