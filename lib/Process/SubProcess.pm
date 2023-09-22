@@ -1,6 +1,6 @@
 #---------------------------------
 # @author Bodo (Hugo) Barwich
-# @version 2023-08-25
+# @version 2023-09-22
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -44,7 +44,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.1.5';
+our $VERSION = '2.1.6';
 
 =head1 DESCRIPTION
 
@@ -242,6 +242,10 @@ C<check | read | readtimeout> - Time in seconds to wait for the process output.
 If the process is expected to run longer it is useful to set it to avoid excessive checks.
 It is also important for multiple process execusions, because other processes will not
 be checked before the read has not timed out.
+
+C<debug> - show internal processing information
+
+C<quiet> - do not print any warnings or errors
 
 See L<Method C<setName()>|/"setName ( NAME )">
 
@@ -1204,6 +1208,12 @@ And then checks the process with the C<Check()> method.
 It is used by the B<EXECUTIONTIMEOUT> functionality to ensure that the process does not
 run longer than required.
 
+This will include an Error Message "I<Process terminating ...>"
+and set the Process C<ERROR CODE> to C< 4 >.
+
+Enabling the C<DEBUG> option will additionally include an B<Activity Information> from
+which method C<Terminate()> was called.
+
 See L<Method C<Check()>|/"Check ()">
 
 See L<Method C<setTimeout()>|/"setTimeout ()">
@@ -1237,6 +1247,33 @@ sub Terminate {
           "Sub Process ${sprcnm}: Process is not running.\n";
     }       #if($self->isRunning)
 }
+
+=pod
+
+=over 4
+
+=item Kill ()
+
+This method sends a C<KILL> signal to the process if it is running.
+
+It is used by the B<EXECUTIONTIMEOUT> functionality to ensure that the process does not
+run longer than required.
+
+Any not yet read output will get lost.
+
+This will include an Error Message "I<Process killing ...>"
+and set the Process C<ERROR CODE> to C< 4 > and the C<EXIT CODE> to C< 9 >.
+
+Enabling the C<DEBUG> option will additionally include an B<Error Message> from
+which method C<Kill()> was called.
+
+See L<Method C<Check()>|/"Check ()">
+
+See L<Method C<setTimeout()>|/"setTimeout ()">
+
+=back
+
+=cut
 
 sub Kill {
     my $self   = shift;

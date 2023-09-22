@@ -335,16 +335,16 @@ subtest 'Runner Plain Text Boundary' => sub {
 
 subtest 'Runner Timeout Error' => sub {
 
-  $itestpause = 3;
+  $itestpause = 5;
 
-  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 2`;
+  $srunnerresult = `$Config{perlpath} ${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 1`;
   $irunnerstatus = $?;
 
   print("Runner Result:\n'$srunnerresult'\n");
   print("Runner EXIT CODE: '$irunnerstatus'\n");
 
   isnt($srunnerresult, undef, "Runner Result is returned");
-  ok($irunnerstatus =~ qr/^-?\d$/, "Runner EXIT CODE is numeric");
+  ok($irunnerstatus =~ qr/^-?\d+$/, "Runner EXIT CODE is numeric");
   is($irunnerstatus, 0, "Runner EXIT CODE '0' is correct");
 
   $sscriptsummary = undef;
@@ -404,7 +404,7 @@ subtest 'Runner Exit Code' => sub {
 	  print("Runner EXIT CODE: '$irunnerstatus'\n");
 
 	  isnt($srunnerresult, undef, "Runner Result is returned");
-	  ok($irunnerstatus =~ qr/^-?\d$/, "Runner EXIT CODE is numeric");
+	  ok($irunnerstatus =~ qr/^-?\d+$/, "Runner EXIT CODE is numeric");
 	  is($irunnerstatus, $iteststatus, "Runner EXIT CODE '$iteststatus' is correct");
 
 	  $sscriptsummary = undef;
@@ -460,7 +460,7 @@ subtest 'Runner Exit Code' => sub {
     print("Runner EXIT CODE: '$irunnerstatus'\n");
 
     isnt($srunnerresult, undef, "Runner Result is returned");
-    ok($irunnerstatus =~ qr/^-?\d$/, "Runner EXIT CODE is numeric");
+    ok($irunnerstatus =~ qr/^-?\d+$/, "Runner EXIT CODE is numeric");
     is($irunnerstatus, 4, "Runner EXIT CODE '4' is correct");
 
     $sscriptsummary = undef;

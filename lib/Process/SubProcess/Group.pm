@@ -1,6 +1,6 @@
 #---------------------------------
 # @author Bodo (Hugo) Barwich
-# @version 2023-08-25
+# @version 2023-09-22
 # @package SubProcess Management
 # @subpackage Process/SubProcess/Group.pm
 
@@ -57,6 +57,39 @@ in an object oriented manner.
 
 #----------------------------------------------------------------------------
 #Constructors
+
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item new ( [ CONFIGURATIONS ] )
+
+This is the constructor for a new SubProcess.
+
+B<Parameters:>
+
+C<CONFIGURATIONS> are passed in a hash like fashion, using key and value pairs.
+
+B<Recognized Configurations:>
+
+C<check> - Time in seconds when to check a process for new output.
+This is calculated based on the count of processes to manage.
+
+C<read | readtimeout> - Time in seconds to wait for the process output.
+If the process is expected to run longer it is useful to set it to avoid excessive checks.
+It is also important for multiple process execusions, because other processes will not
+be checked before the read has not timed out.
+
+C<timeout> - Time in seconds to wait for the process to finish. After this time the process will
+be terminated
+
+C<debug> - show internal processing information
+
+C<quiet> - do not print any warnings or errors
+
+=back
+
+=cut
 
 sub new {
 
@@ -117,6 +150,10 @@ sub DESTROY {
 
 #----------------------------------------------------------------------------
 #Administration Methods
+
+=head1 Administration Methods
+
+=cut
 
 sub add {
     my $self = shift;
@@ -213,6 +250,35 @@ sub add {
     #Give the Object back
     return $rsprc;
 }
+
+=pod
+
+=over 4
+
+=item setCheckInterval ( INTERVAL )
+
+This method calculates the C<READTIMEOUT> for each C<Process::SubProces> object according to
+the amount of existing objects. The value of the C<READTIMEOUT> for each Process will be rounded
+to a whole number.
+
+B<Example:>
+
+The B<Process Group> manages 3 B<Processes>. Processes "I<A>", "I<B>" and "I<C>".
+Process "I<A>" should be checked every B<6 seconds>. So, setting C<setCheckInterval(6)> will
+set the C<READTIMEOUT> of Processes "I<A>", "I<B>" and "I<C>" to B<2 seconds>.
+This way after cycling over the processes the Process "I<A>" will be checked again
+after 6 seconds.
+
+B<Parameters:>
+
+C<INTERVAL> - is an integer that specifies the interval in which each process should
+be checked.
+
+See L<Method C<Process::SubProcess::setArrProcess()>|SubProcess/"setReadTimeout ( TIMEOUT )">
+
+=back
+
+=cut
 
 sub setCheckInterval {
     my $self = shift;
