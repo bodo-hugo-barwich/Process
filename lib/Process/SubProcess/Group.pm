@@ -83,6 +83,10 @@ be checked before the read has not timed out.
 C<timeout> - Time in seconds to wait for the process to finish. After this time the process will
 be terminated
 
+C<debug> - show internal processing information
+
+C<quiet> - do not print any warnings or errors
+
 =back
 
 =cut
