@@ -1,6 +1,6 @@
 #---------------------------------
 # @author Bodo (Hugo) Barwich
-# @version 2023-09-22
+# @version 2023-09-23
 # @package SubProcess Management
 # @subpackage Process/SubProcess.pm
 
@@ -44,7 +44,7 @@ use IO::Select;
 use IPC::Open3;
 use Symbol qw(gensym);
 
-our $VERSION = '2.1.6';
+our $VERSION = '2.1.7';
 
 =head1 DESCRIPTION
 
@@ -378,11 +378,15 @@ sub setCommand {
 =item setReadTimeout ( TIMEOUT )
 
 This method sets the C<READTIMEOUT> property as numeric value that represents
-the Time in seconds to wait for the process output.
+the time in seconds to wait for the command output.
 If the process is expected to run longer it is useful to set it to avoid excessive checks.
 It is also important for multiple process execusions, because other processes will not
 be checked before the read has not timed out.
 It can only be set when the Sub Process is not running.
+
+B<Parameters:>
+
+C<TIMEOUT> - is an integer that specifies how long the manager will be waiting for output.
 
 See L<Method C<Launch()>|/"Launch ()">
 
