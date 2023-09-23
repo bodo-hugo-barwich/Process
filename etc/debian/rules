@@ -6,31 +6,32 @@ export DH_VERBOSE=1
 
 PKGNAME := $(shell dpkg-parsechangelog -SSource)
 INSTALLPREFIX := $(shell perl '-V:install.*' | grep -iE '^installprefix=' | cut -d= -f2 | cut -d"'" -f2 )
+SCRIPTDIR := $(shell perl '-V:install.*' | grep -iE '^installscript=' | cut -d= -f2 | cut -d"'" -f2 )
 PERLVENDORLIB := $(shell perl '-V:install.*' | grep -iE '^installvendorlib=' | cut -d= -f2 | cut -d"'" -f2 )
+DATADIR := $(shell echo $(PERLVENDORLIB) | sed -re 's#^(.*)/perl[0-9\.]+#\1#i' )
 
 
-override_dh_auto_clean: 
-	rm -fR debian/$(PKGNAME)/	
+override_dh_auto_clean:
+	rm -fR debian/$(PKGNAME)/
 	dh_auto_clean
-	
+
 
 %:
-	dh $@  
+	dh $@
 
-override_dh_auto_configure: 
-	perl Makefile.PL INSTALLDIRS=perl INSTALLPRIVLIB=$(PERLVENDORLIB) 
+override_dh_auto_configure:
+	perl Makefile.PL INSTALLDIRS=perl INSTALLPRIVLIB=$(PERLVENDORLIB)
 
 override_dh_auto_install:
 	dh_auto_install --
+  echo "PKGNAME: " $(PKGNAME)
+  echo "VENDORDIR: " $(PERLVENDORLIB)
+  echo "DATADIR: " $(DATADIR)
+  echo "SCRIPTDIR: " $(SCRIPTDIR)
+  mkdir -p debian/$(PKGNAME)$(DATADIR)/$(PKGNAME)/bin
+  mv debian/$(PKGNAME)$(SCRIPTDIR)/* debian/$(PKGNAME)$(DATADIR)/$(PKGNAME)/bin/
+  ln -s $(DATADIR)/$(PKGNAME)/bin/run_subprocess.pl debian/$(PKGNAME)$(SCRIPTDIR)/run_subprocess.pl
 	rm -fR debian/$(PKGNAME)/usr/lib/perl5/x86_64-linux-gnu-thread-multi/
-
-#override_dh_install:
-#	dh_install --list-missing -X.pyc -X.pyo
 
 override_dh_usrlocal:
 	rm -fR debian/$(PKGNAME)/usr/local/lib/
-
-#override_dh_prep: 
-#	rm -fR debian/$(PKGNAME)/usr/local/lib/x86_64-linux-gnu/perl/5.32.1/auto/
-#	dh_prep --
-

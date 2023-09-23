@@ -1,6 +1,6 @@
-libprocess-subprocess-perl (2.0-1) UNRELEASED; urgency=low
+libprocess-subprocess-perl (2.1.7-1) UNRELEASED; urgency=low
 
   * Initial release. (Closes: #23)
+  * Integrate Bash Integration Script. (Closes: #45)
 
- -- Domibay - Hugo <hugo@domibay.org>  Wed, 05 Jan 2022 13:02:11 +0000
-
+ -- Bodo Hugo Barwich <b.barwich@hotmail.com>  Sat, 23 Sep 2023 15:27:11 +0300

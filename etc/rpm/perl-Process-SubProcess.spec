@@ -27,16 +27,13 @@ It also implements running multiple Sub Processes simultaneously while keeping a
 
 
 %build
-
+perl Makefile.PL INSTALLDIRS=perl INSTALLPRIVLIB=%{perl_vendorlib}
 
 %install
 rm -rf %{buildroot}
 
-
-rm -rf %{buildroot}
-
-rm -f Makefile* *META* MANIFEST* cpanfile .travis*
-rm -fR .github
+rm -f cpanfile .travis*
+rm -fR .github scripts
 find ./ -type f -name '.gitignore' -exec rm -f {} \;
 rm -fR docs/src
 
