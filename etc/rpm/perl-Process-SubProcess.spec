@@ -4,8 +4,8 @@
 
 
 Name: perl-Process-SubProcess
-Version: 2.0
-Release: 20210208git6cbb456
+Version: 2.1.7
+Release: 20230923git159360e
 Summary: Perl Module for Multiprocessing
 License: see https://dev.perl.org/licenses/
 Group: 		Development/Libraries
