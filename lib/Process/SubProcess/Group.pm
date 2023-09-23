@@ -1,6 +1,6 @@
 #---------------------------------
 # @author Bodo (Hugo) Barwich
-# @version 2023-09-22
+# @version 2023-09-23
 # @package SubProcess Management
 # @subpackage Process/SubProcess/Group.pm
 
@@ -153,6 +153,24 @@ sub DESTROY {
 
 =head1 Administration Methods
 
+=over 4
+
+=item add ( [ OBJECT | CLASS ] )
+
+This method adds a B<Process> object to the list of managed processes.
+
+B<Parameters:>
+
+C<OBJECT | CLASS> - is a C<Process::SubProcess> object or a compatible class name.
+If a class name or no parameter is given a new object will be created.
+
+B<Returns:> It returns the object that was addded to list.
+If an object was given the same will be returned.
+
+See L<Method C<Process::SubProcess::setArrProcess()>|Process::SubProcess/"setReadTimeout ( TIMEOUT )">
+
+=back
+
 =cut
 
 sub add {
@@ -257,7 +275,7 @@ sub add {
 
 =item setCheckInterval ( INTERVAL )
 
-This method calculates the C<READTIMEOUT> for each C<Process::SubProces> object according to
+This method calculates the C<READTIMEOUT> for each C<Process::SubProcess> object according to
 the amount of existing objects. The value of the C<READTIMEOUT> for each Process will be rounded
 to a whole number.
 
@@ -274,7 +292,7 @@ B<Parameters:>
 C<INTERVAL> - is an integer that specifies the interval in which each process should
 be checked.
 
-See L<Method C<Process::SubProcess::setArrProcess()>|SubProcess/"setReadTimeout ( TIMEOUT )">
+See L<Method C<Process::SubProcess::setArrProcess()>|Process::SubProcess/"setReadTimeout ( TIMEOUT )">
 
 =back
 
@@ -310,6 +328,25 @@ sub setCheckInterval {
         $self->setReadTimeout($irdtmout);
     } #if($self->{"_check_interval"} > 0 && scalar(@{$self->{"_array_processes"}}) > 0)
 }
+
+=pod
+
+=over 4
+
+=item setReadTimeout ( TIMEOUT )
+
+This method set the C<READTIMEOUT> for each C<Process::SubProcess> object.
+
+B<Parameters:>
+
+C<TIMEOUT> - is an integer that specifies the time in seconds to wait for output
+from the command.
+
+See L<Method C<Process::SubProcess::setArrProcess()>|Process::SubProcess/"setReadTimeout ( TIMEOUT )">
+
+=back
+
+=cut
 
 sub setReadTimeout {
     my $self = shift;
