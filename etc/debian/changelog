@@ -1,6 +1,6 @@
 libprocess-subprocess-perl (2.1.7-1) UNRELEASED; urgency=low
 
   * Initial release. (Closes: #23)
-  * Integrate Bash Integration Script. (Closes: #45)
+  * Include Bash Integration Script. (Closes: #45)
 
  -- Bodo Hugo Barwich <b.barwich@hotmail.com>  Sat, 23 Sep 2023 15:27:11 +0300
