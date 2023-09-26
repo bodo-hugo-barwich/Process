@@ -9,7 +9,7 @@ Homepage: https://github.com/bodo-hugo-barwich/Process
 Package: libprocess-subprocess-perl
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}, ${perl:Depends}
+Depends: ${perl:Depends}, ${misc:Depends}
 Description: Perl Module for Multiprocessing
  Running Sub Processes in an easy way while reading STDOUT, STDERR, Exit Code
  and possible System Errors.
