@@ -1,9 +1,9 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: libprocess-subprocess-perl
-Upstream-Contact: Bodo Hugo Barwich <42355798+bodo-hugo-barwich@users.noreply.github.com>
+Upstream-Contact: Bodo (Hugo) Barwich <b.barwich@hotmail.com>
 Source: https://github.com/bodo-hugo-barwich/Process
 
-Files:		*     
-Copyright: 2021 Bodo Hugo Barwich
-License: 	Perl  
+Files:		*
+Copyright: 2023, Bodo (Hugo) Barwich <b.barwich@hotmail.com>
+License: 	Perl
  https://dev.perl.org/licenses/

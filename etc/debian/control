@@ -1,7 +1,7 @@
 Source: libprocess-subprocess-perl
 Section: perl
 Priority: optional
-Maintainer: Domibay - Hugo <hugo@domibay.org>
+Maintainer: Bodo (Hugo) Barwich <b.barwich@hotmail.com>
 Build-Depends: debhelper-compat (= 12)
 Standards-Version: 4.5.0
 Homepage: https://github.com/bodo-hugo-barwich/Process
@@ -9,9 +9,9 @@ Homepage: https://github.com/bodo-hugo-barwich/Process
 Package: libprocess-subprocess-perl
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}, ${perl:Depends}
-Description: Perl Module for Multiprocessing 
- Running Sub Processes in an easy way while reading STDOUT, STDERR, Exit Code 
+Depends: ${perl:Depends}, ${misc:Depends}
+Description: Perl Module for Multiprocessing
+ Running Sub Processes in an easy way while reading STDOUT, STDERR, Exit Code
  and possible System Errors.
- It also implements running multiple Sub Processes simultaneously 
+ It also implements running multiple Sub Processes simultaneously
  while keeping all Report and Error Messages and Exit Codes separate.
