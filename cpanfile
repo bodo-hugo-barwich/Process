@@ -9,7 +9,7 @@ on 'test' => sub {
   requires 'Capture::Tiny';
 };
 
-feature 'test_perl-5.10', 'testing in perl 5.10' => sub {
+feature 'test_perl-versions', 'testing in different Perl Versions' => sub {
   requires 'local::lib';
   requires 'Perl::Build';
 };
