@@ -18,6 +18,13 @@ jobs:
         perl-version: [ "5.10", "5.16", "5.24", "5.32", "5.36", "5.38" ]
 
     steps:
+      - name: Listing Directory Contents
+        run: | 
+          echo "USER: " $(whoami) 
+          echo "HOME: '$HOME'"
+          pwd
+          ls -lah
+        
        # List all installed Perl Libraries
       - name: List all installed Perl Libraries
         run: |
@@ -53,7 +60,7 @@ jobs:
           eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
           cpanm -v --installdeps --with-feature=test_perl-versions . 
           perl-build --definitions ;
-          perl-build ${{ matrix.perl-version }} ~/perl5/perlbrew/perls/perl-${{ matrix.perl-version }} && perlbrew switch ${{ matrix.perl-version }} 
+          perl-build ${{ steps.perl_full_version.version }} ~/perl5/perlbrew/perls/perl-${{ matrix.perl-version }} && perlbrew switch ${{ steps.perl_full_version.version }} 
           perl -v 
           
       - name: Run the Test Suite
