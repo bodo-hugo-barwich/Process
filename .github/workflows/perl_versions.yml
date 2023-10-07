@@ -69,7 +69,7 @@ jobs:
           echo "perlbrew - Installed Versions:"
           perlbrew list
           echo "perlbrew - Switch to Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
-          perlbrew switch ${{ steps.perl_full_version.outputs.version }} 
+          perlbrew switch perl-${{ steps.perl_full_version.outputs.version }} 
           echo "perlbrew - Active Perl Version:"
           perl -v 
           
