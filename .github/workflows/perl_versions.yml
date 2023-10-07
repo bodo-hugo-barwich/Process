@@ -44,6 +44,8 @@ jobs:
         id: perl_full_version
         run: |
           echo "perlbrew - Inspect Available Perl Versions"
+          echo "perlbrew - Environment:"
+          perlbrew env
           echo "Perl - Available Versions:"
           perlbrew available
           echo "Perl - Installed Versions:"
@@ -64,6 +66,8 @@ jobs:
           cpanm -v --installdeps --with-feature=test_perl-versions . 
           perl-build --definitions ;
           perl-build ${{ steps.perl_full_version.outputs.version }} ~/perl5/perlbrew/perls/perl-${{ steps.perl_full_version.outputs.version }}
+          echo "perlbrew - Installed Versions:"
+          perlbrew list
           echo "perlbrew - Switch to Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
           perlbrew switch ${{ steps.perl_full_version.outputs.version }} 
           echo "perlbrew - Active Perl Version:"
