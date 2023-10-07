@@ -75,10 +75,14 @@ jobs:
           
       - name: Run the Test Suite
         run: |
-          echo "Build and Test the Module"
           eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
+          echo "perlbrew - Installed Versions:"
+          perlbrew list
+          echo "perlbrew - Switch to Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
+          perlbrew switch perl-${{ steps.perl_full_version.outputs.version }} && perl -v
           echo "Testing - Active Perl Version:"
           perl -v && perl -MConfig -e 'print "perl path: $Config{perlpath}\n"'
+          echo "Build and Test the Module"
           perl Makefile.PL
           make
           make test TEST_VERBOSE=1
