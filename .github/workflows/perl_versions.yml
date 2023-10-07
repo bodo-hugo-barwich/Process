@@ -76,6 +76,7 @@ jobs:
       - name: Run the Test Suite
         run: |
           echo "Build and Test the Module"
+          eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
           perl Makefile.PL
           make
           make test TEST_VERBOSE=1
