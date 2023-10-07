@@ -78,7 +78,7 @@ jobs:
           echo "Build and Test the Module"
           eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
           echo "Testing - Active Perl Version:"
-          perl -v 
+          perl -v && perl -MConfig -e 'print "perl path: $Config{perlpath}\n"'
           perl Makefile.PL
           make
           make test TEST_VERBOSE=1
