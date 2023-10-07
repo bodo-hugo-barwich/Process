@@ -44,9 +44,12 @@ jobs:
         id: perl_full_version
         run: |
           echo "perlbrew - Inspect Available Perl Versions"
+          echo "Perl - Available Versions:"
           perlbrew available
+          echo "Perl - Installed Versions:"
           perlbrew list
-          full_version=`perlbrew list | grep "${{ matrix.perl-version }}" | sed -re 's/.*perl-([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | sed -n 1p`
+          full_version=`perlbrew available | grep "${{ matrix.perl-version }}" | sed -re 's/.*perl-([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | sed -n 1p`
+          echo "Perl - Requested Version:" $full_version
           echo "version=$full_version" >> $GITHUB_OUTPUT
         
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -67,5 +70,5 @@ jobs:
         run: |
           echo "Build and Test the Module"
           perl Makefile.PL
-          make build
+          make
           make test TEST_VERBOSE=1
