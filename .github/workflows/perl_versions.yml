@@ -6,9 +6,6 @@ on:
   workflow_dispatch:
      branches: [ master ]  
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   perl-version-testing:
 
@@ -49,7 +46,7 @@ jobs:
           echo "perlbrew - Inspect Available Perl Versions"
           perlbrew available
           perlbrew list
-          full_version=`perlbrew list | grep ${{ matrix.perl-version }} | sed -re 's/.*perl\-([0-9]+\.[0-9]+\.[0-9]+).*/\1/'`
+          full_version=`perlbrew list | grep "${{ matrix.perl-version }}" | sed -re 's/.*perl-([0-9]+\.[0-9]+\.[0-9]+).*/\1/' | sed -n 1p`
           echo "version=$full_version" >> $GITHUB_OUTPUT
         
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
