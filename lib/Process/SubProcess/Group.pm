@@ -1,6 +1,6 @@
 #---------------------------------
 # @author Bodo (Hugo) Barwich
-# @version 2023-09-23
+# @version 2023-10-07
 # @package SubProcess Management
 # @subpackage Process/SubProcess/Group.pm
 
@@ -583,6 +583,17 @@ sub Check {
                 $self->{"_report"} .= "Sub Process ${sprcnm}: checking ...\n"
                   if ( $self->{"_debug"} > 0 );
 
+                if ( $self->{'_execution_timeout'} > -1 ) {
+
+                    #Synchronise with the Sub Processes
+                    $self->{'_start_time'} = $sbprc->getStartTime
+                      if ( $self->{'_start_time'} < 0 );
+
+                    $self->{'_start_time'} = $sbprc->getStartTime
+                      if ( $sbprc->getStartTime < $self->{'_start_time'} );
+
+                }
+
                 if ( $sbprc->isRunning ) {
                     if ( $sbprc->Check ) {
 
@@ -709,6 +720,13 @@ sub Wait {
             if (   $self->{"_check_interval"} > -1
                 || $self->{"_execution_timeout"} > -1 )
             {
+                if ( $self->{'_start_time'} < $itmchkstrt ) {
+
+                    # Re-synchronise with updated Start Time
+                    $itmchkstrt = $self->{'_start_time'};
+                    $itmrngstrt = $self->{'_start_time'};
+                }
+
                 $itmchkend = time;
                 $itmrngend = $itmchkend;
 
