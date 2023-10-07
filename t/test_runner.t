@@ -64,6 +64,7 @@ my $iprccnt = -1;
 my $iprctmoutcnt = -1;
 
 
+print "Perl Interpreter Version: '$]'\n";
 print "Perl Interpreter Path: '", $Config{perlpath}, "'\n";
 
 subtest 'Runner Script Usage' => sub {
