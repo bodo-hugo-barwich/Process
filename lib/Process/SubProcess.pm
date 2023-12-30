@@ -514,11 +514,11 @@ sub setProfiling {
 
 =item setDebug ( DEBUG )
 
-This method enables the C<DEBUG> option.
+This method enables the B<Debug> mode.
 
 B<Parameters:>
 
-C<DEBUG> - whole number to enable or disable the C<DEBUG> mode. Negative numbers or C< 0 >
+C<DEBUG> - whole number to enable or disable the B<Debug> mode. Negative numbers or C< 0 >
 will disable it. Positive numbers or C< 1 > will enable it.
 
 See L<Method C<Kill()>|/"Kill ()">
@@ -1312,7 +1312,7 @@ Any not yet read output will get lost.
 This will include an Error Message "I<Process killing ...>"
 and set the Process C<ERROR CODE> to C< 4 > and the C<EXIT CODE> to C< 9 >.
 
-Enabling the C<DEBUG> option will additionally include an B<Error Message> from
+Enabling the B<Debug> mode will additionally include an B<Error Message> from
 which method C<Kill()> was called.
 
 See L<Method C<Check()>|/"Check ()">
@@ -1358,7 +1358,7 @@ This method removes all file handles to used pipes if it is not running anymore.
 
 If the process is still running it will be killed with the C<Kill> method.
 
-Enabling the C<DEBUG> option will additionally include an B<Error Message> from
+Enabling the B<Debug> mode will additionally include an B<Error Message> from
 which method C<freeResources()> was called.
 
 See L<Method C<Kill()>|/"Kill ()">
@@ -1623,6 +1623,22 @@ sub getExecutionTime {
 sub isProfiling {
     return $_[0]->{'_profiling'};
 }
+
+=pod
+
+=over 4
+
+=item isDebug ()
+
+This Method indicates whether the B<Debug> mode is enabled.
+
+B<Returns:> It returns whole number representing the B<Debug> mode.
+
+See L<Method C<setDebug()>|/"setDebug ( DEBUG )">
+
+=back
+
+=cut
 
 sub isDebug {
     return $_[0]->{'_debug'};
