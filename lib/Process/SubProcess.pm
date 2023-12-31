@@ -1091,15 +1091,26 @@ sub Read {
 
 =over 4
 
-=item Wait ()
+=item Wait ( [ CONFIGURATIONS ] )
 
 This method calls the C<Check()> method continuously for a started process
 which was started with the C<Launch()> method until the C<Check()> method tells that
 the process is finished.
 
-If a C<TIMEOUT> is set through the C<setTimeout()> method the B<Manager Process> will
-terminate the process after the C<TIMEOUT> is fulfilled.
+If a C<TIMEOUT> is set the B<Manager Process> will terminate the process with
+the C<Terminate()> method after the C<TIMEOUT> is fulfilled.
 When a process times out an B<Error Code> of C< 4 > will be set.
+
+B<Parameters:>
+
+C<CONFIGURATIONS> - is a list are passed in a hash like fashion, using key and value pairs.
+
+B<Recognized Configurations:>
+
+C<check> - is an integer that specifies the interval in which all processes should
+be checked once.
+
+C<timeout> - is an integer that specifies the maximal execution time in seconds.
 
 B<Returns:> It returns C< 1 > when the process has finished correctly.
 It returns C< 0 > when the process had to be terminated.
@@ -1197,17 +1208,28 @@ sub Wait {
 
 =over 4
 
-=item Run ()
+=item Run ( [ CONFIGURATIONS ] )
 
 This method starts the process calling the C<Launch()> method and then calls
 the C<Wait()> method to wait until the process is finished.
+
+B<Parameters:>
+
+C<CONFIGURATIONS> - is a list are passed in a hash like fashion, using key and value pairs.
+
+B<Recognized Configurations:>
+
+C<check> - is an integer that specifies the interval in which all processes should
+be checked once.
+
+C<timeout> - is an integer that specifies the maximal execution time in seconds.
 
 B<Returns:> It returns C< 1 > when the process was started and finished correctly.
 It returns C< 0 > when the process could not be started or had to be terminated.
 
 See L<Method C<Launch()>|/"Launch ()">
 
-See L<Method C<Wait()>|/"Wait ()">
+See L<Method C<Wait()>|/"Wait ( [ CONFIGURATIONS ] )">
 
 =back
 

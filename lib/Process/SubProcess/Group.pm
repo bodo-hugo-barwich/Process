@@ -710,7 +710,7 @@ be checked once.
 C<read | readtimeout> - is an integer that specifies the time in seconds to wait for output
 from the command for each C<Process::SubProcess> object.
 
-C<timeout> -  is an integer that specifies the maximal execution time in seconds
+C<timeout> - is an integer that specifies the maximal execution time in seconds
 of the whole B<Process Group> execution.
 
 See L<Method C<Process::SubProcess::Terminate()>|Process::SubProcess/"Terminate ()">
