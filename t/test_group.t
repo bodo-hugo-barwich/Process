@@ -444,7 +444,7 @@ subtest 'Process::SubProcess::Group Runtime Checks' => sub {
             "Process Group ERROR CODE: '" . $procgroup->getErrorCode . "'\n" );
 
         is( $procgroup->getErrorCode, 4,
-            "Process Group Execution: ERROR CODE '4' is correct" );
+            "Process Group Execution: ERROR CODE '4' as expected" );
 
         print(  "Process Group STDOUT: '"
               . ${ $procgroup->getReportString }
@@ -477,11 +477,14 @@ subtest 'Process::SubProcess::Group Runtime Checks' => sub {
                 if ( $proctest->getErrorCode == 4 ) {
                     $iprctmoutcnt++;
 
+                    is( $iscriptstatus, -1,
+                        "Exit Code not captured as expected" );
                     is( $proctest->getExecutionTime,
                         -1, "Execution Time not measured as expected" );
                 }
-                else    #Timeout Error
+                else    # Process finished normally
                 {
+                    isnt( $iscriptstatus, -1, "Exit Code was captured" );
                     isnt( $proctest->getExecutionTime,
                         -1, "Execution Time was measured" );
                 }       #if($proctest->getErrorCode == 4)
@@ -490,19 +493,14 @@ subtest 'Process::SubProcess::Group Runtime Checks' => sub {
                 print( "Execution Time: '", $proctest->getExecutionTime,
                     "'\n" );
 
-                if ( defined $rscriptlog ) {
-                    print("STDOUT: '$$rscriptlog'\n");
-                }
-                else {
-                    isnt( $rscriptlog, undef, "STDOUT was captured" );
-                }       #if(defined $rscriptlog)
+                isnt( $rscriptlog, undef, "STDOUT was captured" );
 
-                if ( defined $rscripterror ) {
-                    print("STDERR: '$$rscripterror'\n");
-                }
-                else {
-                    isnt( $rscripterror, undef, "STDERR was captured" );
-                }       #if(defined $rscripterror)
+                print("STDOUT: '$$rscriptlog'\n") if ( defined $rscriptlog );
+
+                isnt( $rscripterror, undef, "STDERR was captured" );
+
+                print("STDERR: '$$rscripterror'\n")
+                  if ( defined $rscripterror );
             }    #if(defined $proctest)
         }    #for($iprc = 0; $iprc < $iprccnt; $iprc++)
 
