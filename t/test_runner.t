@@ -462,7 +462,7 @@ subtest 'Runner Exit Code' => sub {
         }    #if(defined $rscripterror)
     };
     subtest 'Runner returns Error Code' => sub {
-        $itestpause = 4;
+        $itestpause = 10;
 
         $srunnerresult =
 `$Config{perlpath} ${spath}${srunnerscript} -n "script - times out" -c "${spath}${stestscript} $itestpause" -t 1 -x`;
