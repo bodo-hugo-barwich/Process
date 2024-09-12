@@ -68,10 +68,10 @@ jobs:
           perl-build ${{ steps.perl_full_version.outputs.version }} ~/perl5/perlbrew/perls/perl-${{ steps.perl_full_version.outputs.version }}
           echo "perlbrew - Installed Versions:"
           perlbrew list
-          echo "perlbrew - Switch to Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
-          perlbrew switch perl-${{ steps.perl_full_version.outputs.version }} && perl -v && perl -e 'print "perl ($] / $^V)\n"'
+          echo "perlbrew - Exec with Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
+          perlbrew exec -q --with perl-${{ steps.perl_full_version.outputs.version }} perl -e 'print "perl ($] / $^V)\n"'
           echo "perlbrew - Active Perl Version:"
-          perl -v && perl -MConfig -e 'print "perl ($]) '$^V' path: $Config{perlpath}\n"'
+          perl -v && perl -MConfig -e 'print "perl ($] / $^V) path: $Config{perlpath}\n"'
           
       - name: Run the Test Suite
         run: |
