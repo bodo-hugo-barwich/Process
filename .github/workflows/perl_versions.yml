@@ -43,6 +43,7 @@ jobs:
       - name: Inspect Available Perl Versions
         id: perl_full_version
         run: |
+          perlbrew init
           echo "perlbrew - Inspect Available Perl Versions"
           echo "perlbrew - Environment:"
           perlbrew env
