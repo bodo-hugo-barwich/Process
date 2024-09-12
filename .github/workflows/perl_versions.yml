@@ -72,6 +72,7 @@ jobs:
           echo "* perlbrew - Exec with Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
           perlbrew exec -q --with perl-${{ steps.perl_full_version.outputs.version }} perl -MConfig -e 'print "perl ($] / $^V) path: $Config{perlpath}\n"'
           echo "* perlbrew - Active Perl Version:"
+          perlbrew switch perl-${{ steps.perl_full_version.outputs.version }}
           perl -v && perl -MConfig -e 'print "perl ($] / $^V) path: $Config{perlpath}\n"'
           
       - name: Run the Test Suite
@@ -85,6 +86,7 @@ jobs:
           echo "* Testing - Active Perl Version:"
           perl -v && perl -MConfig -e 'print "perl ($] / $^V) path: $Config{perlpath}\n"'
           echo "Build and Test the Module"
-          perl Makefile.PL
-          make
+          perlbrew exec -q --with perl-${{ steps.perl_full_version.outputs.version }} \
+          perl Makefile.PL && \
+          make && \
           make test TEST_VERBOSE=1
