@@ -71,7 +71,7 @@ jobs:
           echo "perlbrew - Switch to Perl Version '${{ steps.perl_full_version.outputs.version }}' ..." 
           perlbrew switch perl-${{ steps.perl_full_version.outputs.version }} && perl -v
           echo "perlbrew - Active Perl Version:"
-          perl -v 
+          perl -v && perl -MConfig -e 'print "perl ($^V) path: $Config{perlpath}\n"'
           
       - name: Run the Test Suite
         run: |
