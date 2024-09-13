@@ -87,6 +87,7 @@ jobs:
           perl -v && perl -MConfig -e 'print "perl ($] / $^V) path: $Config{perlpath}\n"'
           echo "Build and Test the Module"
           perlbrew exec -q --with perl-${{ steps.perl_full_version.outputs.version }} \
+          cpanm -vn --installdeps .
           perl Makefile.PL && \
           make && \
           make test TEST_VERBOSE=1
